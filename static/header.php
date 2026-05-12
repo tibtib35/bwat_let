@@ -2,7 +2,7 @@
     <div class="container">
             <div class="logo">
                 <i class="fas fa-film"></i>
-                <span>FilmBox</span>
+                <span>Bwat Let</span>
             </div>
             <nav class="nav">
                 <ul>
