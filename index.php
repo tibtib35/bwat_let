@@ -26,7 +26,7 @@ require_once("php/functions_structure.php");
     <?php include("static/nav.php"); ?>
 
     <main>
-        #Visible que si on est pas connecté
+        <!-- Visible que si on est pas connecté -->
         <section class="accueil">
             <div class="accueil-content">
                 <h1>Cataloguez vos films préférés</h1>
