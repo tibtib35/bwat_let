@@ -1,0 +1,3 @@
+<?php 
+$titreSite = "Bwat Let";
+?>
