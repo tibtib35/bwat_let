@@ -3,7 +3,7 @@
 
 
 require_once("includes/constantes.php");
-require_once("php/functions-DB.php");
+require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
 

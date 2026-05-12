@@ -11,7 +11,7 @@
                 </ul>
             </nav>
             <div class="nav-buttons">
-                <a href="php/login.php" class="btn-login">Se connecter</a>
+                <a href="connection.php" class="btn-login">Se connecter</a>
                 <a href="php/login.php" class="btn-signup">S'inscrire</a>
             </div>
         </div>
