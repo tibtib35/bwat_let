@@ -1,3 +1,3 @@
 <footer>
-    <p>Pokédex - ESIR BDD-IHM</p>
+    <p>Bwat let - ESIR BDD-IHM</p>
 </footer>

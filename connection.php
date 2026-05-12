@@ -8,14 +8,14 @@ session_start();
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Connexion - Pokédex</title>
+    <title>Connexion - Bwat Let</title>
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
     <?php require_once('./static/header.php'); ?>
     <?php require_once('./static/nav.php'); ?>
     <main>
-        <h2>Connexion dresseur</h2>
+        <h2>Connexion</h2>
 
         <?php
         if (isset($_GET['erreur'])) {
