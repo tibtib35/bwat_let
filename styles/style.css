@@ -119,8 +119,8 @@ header .container {
 	box-shadow: 0 5px 15px rgba(0, 208, 132, 0.3);
 }
 
-/* ===== Hero Section ===== */
-.hero {
+/* ===== Accueil Section ===== */
+.accueil {
 	position: relative;
 	min-height: 600px;
 	display: flex;
@@ -129,7 +129,7 @@ header .container {
 	overflow: hidden;
 }
 
-.hero-background {
+.accueil-background {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -139,7 +139,7 @@ header .container {
 	z-index: -1;
 }
 
-.gradient-overlay {
+.accueil-overlay {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -150,13 +150,13 @@ header .container {
 	z-index: -1;
 }
 
-.hero-content {
+.accueil-content {
 	text-align: center;
 	z-index: 1;
 	animation: fadeInUp 0.8s ease-out;
 }
 
-.hero-content h1 {
+.accueil-content h1 {
 	font-size: 3.5rem;
 	font-weight: bold;
 	color: var(--white);
@@ -164,7 +164,7 @@ header .container {
 	line-height: 1.2;
 }
 
-.hero-content p {
+.accueil-content p {
 	font-size: 1.3rem;
 	color: var(--light-text);
 	margin-bottom: 2.5rem;
@@ -468,11 +468,11 @@ footer p {
 		flex-wrap: wrap;
 	}
 
-	.hero-content h1 {
+	.accueil-content h1 {
 		font-size: 2.2rem;
 	}
 
-	.hero-content p {
+	.accueil-content p {
 		font-size: 1rem;
 	}
 
@@ -496,14 +496,22 @@ footer p {
 		order: 4;
 		flex-wrap: wrap;
 	}
+
+	.accueil-content h1 {
+		font-size: 2.2rem;
+	}
+
+	.accueil-content p {
+		font-size: 1rem;
+	}
 }
 
 @media (max-width: 480px) {
-	.hero-content h1 {
+	.accueil-content h1 {
 		font-size: 1.8rem;
 	}
 
-	.hero-content p {
+	.accueil-content p {
 		font-size: 0.9rem;
 	}
 

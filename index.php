@@ -3,7 +3,7 @@
 
 
 require_once("includes/constantes.php");
-require_once("php/functions-DB.php");
+require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
 
@@ -16,7 +16,7 @@ require_once("php/functions_structure.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmBox - Cataloguez vos films préférés</title>
+    <title>Bwat Let - Cataloguez vos films préférés</title>
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -26,15 +26,15 @@ require_once("php/functions_structure.php");
     <?php include("static/nav.php"); ?>
 
     <main>
-
-        <section class="hero">
-            <div class="hero-content">
+        #Visible que si on est pas connecté
+        <section class="accueil">
+            <div class="accueil-content">
                 <h1>Cataloguez vos films préférés</h1>
-                <p>Notez, critiques et suivez les films que vous regardez</p>
-                <a href="php/signup.php" class="btn-primary">Commencer gratuitement</a>
+                <p>Bienvenue sur Bwat Let</p>
+                <a href="php/signup.php" class="btn-primary">S'inscrire</a>
             </div>
-            <div class="hero-background">
-                <div class="gradient-overlay"></div>
+            <div class="accueil-background">
+                <div class="accueil-overlay"></div>
             </div>
         </section>
 
