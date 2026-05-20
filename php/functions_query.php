@@ -353,7 +353,7 @@ function login($mysqli, $login, $password)
             SET nom             = '$nom',
                 prenom          = '$prenom',
                 email           = '$email',
-                adresse         = '$adresse',
+                adresse         = '$adresse'
             WHERE id_utilisateur = $id_utilisateur";
 
     return writeDB($mysqli, $sql);
