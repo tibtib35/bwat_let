@@ -10,6 +10,7 @@ session_start();
     <meta charset="UTF-8">
     <title>Connexion - Bwat Let</title>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php require_once('./static/header.php'); ?>
