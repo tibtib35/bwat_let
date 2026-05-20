@@ -75,4 +75,85 @@ function getNbArticlesByRecherche($conn, $search, $genre) {
     $result = readDB($conn, $sql);
     return $result[0]['total']; 
 }
+
+// ============================================================
+// V3 — Fonctions pour la page détail d'un article
+// ============================================================
+
+// Retourne un article complet avec les infos du film, du genre et de l'auteur
+// Retourne null si l'article n'existe pas
+// $id : id_article récupéré depuis l'URL
+function getArticle($conn, $id) {
+    $id = (int) $id;
+
+    $sql = "SELECT id_article, article.titre AS titreArticle, article.contenu, article.dateCreation,
+                 film.id_film, film.titre AS titreFilm, film.synopsis, film.dateSortie, film.duree, film.paysOrigine, film.langue, film.affiche,
+                 genre.nomGenre, utilisateurs.login AS auteur
+            FROM article InNER JOIN film ON article.id_film = film.id_film
+                INNER JOIN genre ON film.id_genre = genre.id_genre
+                INNER JOIN utilisateurs ON article.id_utilisateur = utilisateurs.id_utilisateur
+            WHERE article.id_article = $id";
+
+    $result = readDB($conn, $sql);
+
+    // readDB retourne un tableau : on veut juste le premier (et unique) résultat
+    // Si le tableau est vide, l'article n'existe pas → on retourne null
+    return $result[0] ?? null;
+}
+
+function getAvisByArticle($conn, $id_article) {
+    $id_article = (int) $id_article;
+
+    $sql = "SELECT avis.id_avis, avis.titre, avis.texte, avis.note, avis.dateCreation, utilisateurs.login AS auteur
+            FROM avis
+                INNER JOIN utilisateurs ON avis.id_utilisateur = utilisateurs.id_utilisateur
+            WHERE avis.id_article = $id_article
+              AND avis.visible = TRUE
+            ORDER BY avis.dateCreation DESC";
+        
+            
+
+    return readDB($conn, $sql);
+}
+
+
+
+function getMoyenneAvis($conn, $id_article) {
+    $id_article = (int) $id_article;
+
+    $sql = "SELECT AVG(note) AS moyenne, COUNT(*) AS nbAvis
+            FROM avis
+            WHERE id_article = $id_article
+              AND visible = TRUE";
+
+    $result = readDB($conn, $sql);
+
+    return [
+        'moyenne' => $result[0]['moyenne'] ?? 0,
+        'nbAvis'  => $result[0]['nbAvis'] ?? 0,
+    ];
+}
+
+function getRealisateursByFilm($conn, $id_film) {
+    $id_film = (int) $id_film;
+
+    $sql = "SELECT realisateurs.nom, realisateurs.prenom
+            FROM realisateurs
+                INNER JOIN realise ON realisateurs.id_real = realise.id_real
+            WHERE realise.id_film = $id_film";
+
+    return readDB($conn, $sql);
+}
+
+
+function getActeursByFilm($conn, $id_film) {
+    $id_film = (int) $id_film;
+
+    $sql = "SELECT acteurs.nom, acteurs.prenom
+            FROM acteurs
+                INNER JOIN joueDans ON acteurs.id_acteur = joueDans.id_acteur
+            WHERE joueDans.id_film = $id_film";
+
+    return readDB($conn, $sql);
+}
 ?>
