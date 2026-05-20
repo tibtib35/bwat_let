@@ -31,7 +31,7 @@ require_once("php/functions_structure.php");
             <div class="accueil-content">
                 <h1>Cataloguez vos films préférés</h1>
                 <p>Bienvenue sur Bwat Let</p>
-                <a href="php/signup.php" class="btn-primary">S'inscrire</a>
+                <a href="inscription.php" class="btn-primary">S'inscrire</a>
             </div>
             <div class="accueil-background">
                 <div class="accueil-overlay"></div>
@@ -78,24 +78,26 @@ require_once("php/functions_structure.php");
                 <h2>Films Populaires</h2>
                 <div class="films-grid">
                     <?php for ($i = 1; $i <= 8; $i++): ?>
-                        <div class="film-card">
-                            <div class="film-poster">
-                                <img src="https://via.placeholder.com/200x300?text=Film+<?php echo $i; ?>"
-                                    alt="Film <?php echo $i; ?>">
-                                <div class="film-overlay">
-                                    <div class="film-rating">
-                                        <span class="stars">★★★★★</span>
+                        <a href="article.php?id=<?php echo $i; ?>" class="film-card-link">
+                            <div class="film-card">
+                                <div class="film-poster">
+                                    <img src="https://via.placeholder.com/200x300?text=Film+<?php echo $i; ?>"
+                                        alt="Film <?php echo $i; ?>">
+                                    <div class="film-overlay">
+                                        <div class="film-rating">
+                                            <span class="stars">★★★★★</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="film-info">
+                                    <h3>Titre du Film <?php echo $i; ?></h3>
+                                    <p class="year">2024</p>
+                                    <div class="user-ratings">
+                                        <span class="rating-stars">⭐ 8.5/10</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="film-info">
-                                <h3>Titre du Film <?php echo $i; ?></h3>
-                                <p class="year">2024</p>
-                                <div class="user-ratings">
-                                    <span class="rating-stars">⭐ 8.5/10</span>
-                                </div>
-                            </div>
-                        </div>
+                        </a>
                     <?php endfor; ?>
                 </div>
             </div>
