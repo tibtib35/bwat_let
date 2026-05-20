@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
 // Chemin vers les includes (remonter d'un niveau depuis php/)
@@ -44,12 +47,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $password_confirm) {
         $error = 'Les mots de passe ne correspondent pas.';
     } else {
-        // TODO: Ajouter le nouvel utilisateur à la base de données
-        // Exemple de structure à implémenter :
-        // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        // Insérer dans la BD : INSERT INTO users (lastname, firstname, address, birthdate, username, email, password) VALUES (...)
+        // Ajouter le nouvel utilisateur à la base de données
+        $mysqli = connectionDB();
+        $insert_result = addProfile($mysqli, $username, $lastname, $firstname, $address, $email, $birthdate, $password);
+        closeDB($mysqli);
         
-        $success = true;
+        if ($insert_result) {
+            $success = true;
+        } else {
+            $error = 'Erreur lors de l\'inscription. Veuillez réessayer.';
+        }
     }
 } else {
     $error = 'Méthode de requête non valide.';

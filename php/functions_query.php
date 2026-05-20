@@ -370,3 +370,21 @@ function updateUserPassword($mysqli, $id_utilisateur, $new_password) {
     
     return writeDB($mysqli, $sql);
 }
+
+function addProfile($mysqli, $login, $nom, $prenom, $address, $email, $dateNaissance, $mdp) {
+    $login          = mysqli_real_escape_string($mysqli, $login);
+    $nom            = mysqli_real_escape_string($mysqli, $nom);
+    $prenom         = mysqli_real_escape_string($mysqli, $prenom);
+    $address        = mysqli_real_escape_string($mysqli, $address);
+    $dateNaissance  = mysqli_real_escape_string($mysqli, $dateNaissance);
+    $email          = mysqli_real_escape_string($mysqli, $email);
+    $mdp            = mysqli_real_escape_string($mysqli, $mdp);
+    $dateCreation   = date('Y-m-d H:i:s');
+    $derniereConnexion = date('Y-m-d H:i:s');
+    $id_role        = 1;
+
+    $sql = "INSERT INTO utilisateurs (nom, prenom, login, mdp, email, adresse, dateNaissance, dateCreation, derniereConnexion, id_role)
+            VALUES ('$nom', '$prenom', '$login', '$mdp', '$email', '$address', '$dateNaissance', '$dateCreation', '$derniereConnexion', $id_role)";
+
+    return writeDB($mysqli, $sql);
+}
