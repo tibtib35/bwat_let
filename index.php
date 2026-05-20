@@ -9,7 +9,7 @@ require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
 
 
-$limite = 6; 
+$limite = 8; 
 $page   = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $genre  = isset($_GET['genre']) ? (int) $_GET['genre'] : 0;
