@@ -5,35 +5,6 @@ require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
 
-// Traiter la soumission du formulaire
-$error = '';
-$success = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $password_confirm = $_POST['password_confirm'] ?? '';
-
-    // Validations
-    if (empty($username)) {
-        $error = 'Le nom d\'utilisateur est requis.';
-    } elseif (empty($email)) {
-        $error = 'L\'email est requis.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'L\'email n\'est pas valide.';
-    } elseif (empty($password)) {
-        $error = 'Le mot de passe est requis.';
-    } elseif (strlen($password) < 8) {
-        $error = 'Le mot de passe doit contenir au moins 8 caractères.';
-    } elseif ($password !== $password_confirm) {
-        $error = 'Les mots de passe ne correspondent pas.';
-    } else {
-        // TODO: Ajouter le nouvel utilisateur à la base de données
-        $success = 'Inscription réussie ! Vous pouvez maintenant vous connecter.';
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -60,51 +31,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p>Créez un compte pour rejoindre Bwat Let</p>
                     </div>
 
-                    <?php if (!empty($error)): ?>
+                    <?php 
+                    session_start();
+                    $error = isset($_GET['error']) ? ($_SESSION['inscription_error'] ?? '') : '';
+                    $success = isset($_GET['success']) ? true : false;
+                    $saved_data = isset($_SESSION['inscription_data']) ? $_SESSION['inscription_data'] : [];
+                    if (!empty($error)) unset($_SESSION['inscription_error']);
+                    if (!empty($saved_data)) unset($_SESSION['inscription_data']);
+                    ?>
+
+                    <?php if ($error): ?>
                         <div class="alert alert-error">
                             <i class="fas fa-exclamation-circle"></i>
                             <?php echo htmlspecialchars($error); ?>
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($success)): ?>
+                    <?php if ($success): ?>
                         <div class="alert alert-success">
                             <i class="fas fa-check-circle"></i>
-                            <?php echo htmlspecialchars($success); ?>
+                            Inscription réussie ! Vous pouvez maintenant vous connecter.
                         </div>
                     <?php endif; ?>
 
-                    <form method="POST" class="auth-form">
+                    <form method="POST" action="php/signup.php" class="auth-form">
                         <div class="form-group">
-                            <label for="username">Nom</label>
-                            <input type="text" id="username" name="username" placeholder="Entrez votre nom" 
-                                   value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" required>
+                            <label for="lastname">Nom</label>
+                            <input type="text" id="lastname" name="lastname" placeholder="Entrez votre nom" value="<?php echo htmlspecialchars($saved_data['lastname'] ?? ''); ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="username">Prénom</label>
-                            <input type="text" id="username" name="username" placeholder="Entrez votre prénom" 
-                                   value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" required>
+                            <label for="firstname">Prénom</label>
+                            <input type="text" id="firstname" name="firstname" placeholder="Entrez votre prénom" value="<?php echo htmlspecialchars($saved_data['firstname'] ?? ''); ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="username">adresse</label>
-                            <input type="text" id="username" name="username" placeholder="Entrez votre adresse" 
-                                   value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" required>
+                            <label for="address">Adresse</label>
+                            <input type="text" id="address" name="address" placeholder="Entrez votre adresse" value="<?php echo htmlspecialchars($saved_data['address'] ?? ''); ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="username">Date de naissance</label>
-                            <input type="text" id="username" name="username" placeholder="Entrez votre date de naissance" 
-                                   value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" required>
+                            <label for="birthdate">Date de naissance</label>
+                            <input type="date" id="birthdate" name="birthdate" placeholder="Entrez votre date de naissance" value="<?php echo htmlspecialchars($saved_data['birthdate'] ?? ''); ?>" required>
                         </div>
                         <div class="form-group">
                             <label for="username">Nom d'utilisateur</label>
-                            <input type="text" id="username" name="username" placeholder="Entrez votre nom d'utilisateur" 
-                                   value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" required>
+                            <input type="text" id="username" name="username" placeholder="Entrez votre nom d'utilisateur" value="<?php echo htmlspecialchars($saved_data['username'] ?? ''); ?>" required>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Adresse email</label>
-                            <input type="email" id="email" name="email" placeholder="Entrez votre email" 
-                                   value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
+                            <input type="email" id="email" name="email" placeholder="Entrez votre email" value="<?php echo htmlspecialchars($saved_data['email'] ?? ''); ?>" required>
                         </div>
 
                         <div class="form-group">
