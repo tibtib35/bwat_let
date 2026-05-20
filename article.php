@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 session_start();
 
 require_once("includes/constantes.php");
+require_once("includes/auth.php");
 require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
@@ -209,6 +210,16 @@ closeDB($conn);
                                 </div>
                                 <h4><?php echo htmlspecialchars($a['titre']); ?></h4>
                                 <p class="review-comment"><?php echo htmlspecialchars($a['texte']); ?></p>
+                                <?php if (isset($_SESSION['id_utilisateur']) && ($a['id_utilisateur'] == $_SESSION['id_utilisateur'] || estAdmin())): ?>
+                                    <div class="review-actions">
+                                        <a href="modifier_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-edit">
+                                            <i class="fas fa-pencil-alt"></i> Modifier
+                                        </a>
+                                        <a href="supprimer_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-danger-small">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
