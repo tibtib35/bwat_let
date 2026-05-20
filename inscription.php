@@ -20,7 +20,6 @@ require_once("php/functions_structure.php");
 
 <body>
     <?php include("static/header.php"); ?>
-    <?php include("static/nav.php"); ?>
 
     <main>
         <section class="auth-page">

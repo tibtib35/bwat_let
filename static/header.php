@@ -7,8 +7,7 @@
         </div>
         <nav class="nav">
             <ul>
-                <li><a href="#films">Films</a></li>
-                <li><a href="#populaires">Populaires</a></li>
+    
             </ul>
         </nav>
         <div class="nav-buttons">
