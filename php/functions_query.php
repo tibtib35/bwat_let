@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . '/../includes/functions-DB.php');
 
-function getArticles($conn, $page, $limite) {
+function getArticles($mysqli, $page, $limite) {
     $offset = ($page - 1) * $limite;
 
     $sql = "SELECT id_article, article.titre AS titreArticle, article.contenu, article.dateCreation,
@@ -209,6 +209,22 @@ function supprimerArticle($mysqli, $id_article) {
     return writeDB($mysqli, $sql);
 }
 
+
+
+function creerAvis($mysqli, $id_article, $id_utilisateur, $titre, $texte, $note) {
+    $id_article     = (int) $id_article;
+    $id_utilisateur = (int) $id_utilisateur;
+    $note           = (int) $note;
+    $titre          = mysqli_real_escape_string($mysqli, $titre);
+    $texte          = mysqli_real_escape_string($mysqli, $texte);
+
+    if ($note < 1 || $note > 5) return false;
+
+    $sql = "INSERT INTO avis (titre, texte, note, dateCreation, visible, id_article, id_utilisateur)
+            VALUES ('$titre', '$texte', $note, NOW(), TRUE, $id_article, $id_utilisateur)";
+
+    return writeDB($mysqli, $sql);
+}
 
 
 function estAuteur($mysqli, $id_article, $id_utilisateur) {

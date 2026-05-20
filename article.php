@@ -9,20 +9,42 @@ require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
 
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0; // id url
-
-
-if ($id <= 0) { // renvoi vers acceuil si id invalide
+if ($id <= 0) {
     header('Location: index.php');
     exit;
 }
 
+// Traitement du formulaire d'avis
+$erreurAvis = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utilisateur'])) {
+    $titre_avis = trim($_POST['titre_avis'] ?? '');
+    $texte_avis = trim($_POST['texte_avis'] ?? '');
+    $note_avis  = (int) ($_POST['note'] ?? 0);
+
+    if ($titre_avis === '') {
+        $erreurAvis = 'Le titre est obligatoire.';
+    } elseif ($texte_avis === '') {
+        $erreurAvis = 'Le texte est obligatoire.';
+    } elseif ($note_avis < 1 || $note_avis > 5) {
+        $erreurAvis = 'La note doit être entre 1 et 5.';
+    } else {
+        $conn = connectionDB();
+        $ok = creerAvis($conn, $id, $_SESSION['id_utilisateur'], $titre_avis, $texte_avis, $note_avis);
+        closeDB($conn);
+        if ($ok) {
+            header('Location: article.php?id=' . $id);
+            exit;
+        } else {
+            $erreurAvis = 'Une erreur est survenue, veuillez réessayer.';
+        }
+    }
+}
 
 $conn = connectionDB();
 
-$article = getArticle($conn , $id) ?? null;
-
+$article = getArticle($conn, $id) ?? null;
 
 if ($article === null) {
     closeDB($conn);
@@ -30,11 +52,10 @@ if ($article === null) {
     exit;
 }
 
-$avis          = getAvisByArticle($conn, $id);
-$stats         = getMoyenneAvis($conn, $id);
-$realisateurs  = getRealisateursByFilm($conn, $article['id_film']);
-$acteurs       = getActeursByFilm($conn, $article['id_film']);
-
+$avis         = getAvisByArticle($conn, $id);
+$stats        = getMoyenneAvis($conn, $id);
+$realisateurs = getRealisateursByFilm($conn, $article['id_film']);
+$acteurs      = getActeursByFilm($conn, $article['id_film']);
 
 closeDB($conn);
 ?>
@@ -192,6 +213,53 @@ closeDB($conn);
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
+
+                <!-- Formulaire pour ajouter un avis -->
+                <?php if (isset($_SESSION['id_utilisateur'])): ?>
+                    <div class="add-review-card">
+                        <h3>Laisser un avis</h3>
+
+                        <?php if ($erreurAvis !== ''): ?>
+                            <p class="alert alert-error"><?php echo htmlspecialchars($erreurAvis); ?></p>
+                        <?php endif; ?>
+
+                        <form method="POST" action="article.php?id=<?php echo $id; ?>" class="review-form">
+
+                            <div class="form-group">
+                                <label for="titre_avis">Titre</label>
+                                <input type="text" id="titre_avis" name="titre_avis"
+                                       value="<?php echo htmlspecialchars($_POST['titre_avis'] ?? ''); ?>"
+                                       placeholder="Résumez votre avis..." required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="note">Note</label>
+                                <select id="note" name="note" required>
+                                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                                        <option value="<?php echo $i; ?>"
+                                            <?php if (isset($_POST['note']) && (int)$_POST['note'] === $i) echo 'selected'; ?>>
+                                            <?php echo $i; ?> / 5
+                                        </option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="texte_avis">Votre avis</label>
+                                <textarea id="texte_avis" name="texte_avis"
+                                          rows="5"
+                                          placeholder="Partagez votre opinion..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary">Publier l'avis</button>
+
+                        </form>
+                    </div>
+                <?php else: ?>
+                    <p style="margin-top: 2rem; color: var(--light-text);">
+                        <a href="connection.php" style="color: var(--accent-color);">Connectez-vous</a> pour laisser un avis.
+                    </p>
+                <?php endif; ?>
 
             </div>
         </section>
