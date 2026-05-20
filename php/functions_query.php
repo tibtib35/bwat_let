@@ -1,10 +1,6 @@
 <?php
 require_once(__DIR__ . '/../includes/functions-DB.php');
 
-// Retourne un tableau d'articles avec le titre du film et le login de l'auteur
-// Triés par dateCreation, limités pour la pagination
-// $page    : numéro de page courante (commence à 1)
-// $limite  : nombre d'articles par page
 function getArticles($conn, $page, $limite) {
     $offset = ($page - 1) * $limite;
 
