@@ -52,18 +52,15 @@ closeDB($conn);
 
     <main>
 
-        <?php if (!isset($_SESSION['id_utilisateur'])): ?>
         <section class="accueil">
             <div class="accueil-content">
                 <h1>Cataloguez vos films préférés</h1>
                 <p>Bienvenue sur Bwat Let</p>
-                <a href="inscription.php" class="btn-primary">S'inscrire</a>
-            </div>
-            <div class="accueil-background">
-                <div class="accueil-overlay"></div>
+                <?php if (!isset($_SESSION['id_utilisateur'])): ?>
+                    <a href="inscription.php" class="btn-primary">S'inscrire</a>
+                <?php endif; ?>
             </div>
         </section>
-        <?php endif; ?>
 
 
         <section class="recent-articles" id="films">

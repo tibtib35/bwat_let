@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erreur = 'La note doit être entre 1 et 5.';
     } else {
         $ok = modifierAvis($conn, $id_avis, $titre, $texte, $note);
-
         if ($ok) {
             closeDB($conn);
             header('Location: article.php?id=' . $avis['id_article']);
@@ -62,52 +61,53 @@ closeDB($conn);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier l'avis - Bwat Let</title>
     <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php include("static/header.php"); ?>
-    <?php include("static/nav.php"); ?>
 
     <main>
-        <div class="container form-page">
-            <h2>Modifier l'avis</h2>
+        <div class="container">
+            <div class="form-page">
 
-            <?php if ($erreur !== ''): ?>
-                <p class="alert alert-error"><?php echo htmlspecialchars($erreur); ?></p>
-            <?php endif; ?>
+                <h2>Modifier l'avis</h2>
 
-            <form method="POST" action="modifier_avis.php?id=<?php echo $id_avis; ?>" class="article-form">
+                <?php if ($erreur !== ''): ?>
+                    <p class="alert alert-error"><?php echo htmlspecialchars($erreur); ?></p>
+                <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="titre">Titre</label>
-                    <input type="text" id="titre" name="titre"
-                           value="<?php echo htmlspecialchars($_POST['titre'] ?? $avis['titre']); ?>"
-                           required>
-                </div>
+                <form method="POST" action="modifier_avis.php?id=<?php echo $id_avis; ?>">
 
-                <div class="form-group">
-                    <label for="note">Note</label>
-                    <select id="note" name="note" required>
-                        <?php for ($i = 5; $i >= 1; $i--): ?>
-                            <option value="<?php echo $i; ?>"
-                                <?php if ((int)($_POST['note'] ?? $avis['note']) === $i) echo 'selected'; ?>>
-                                <?php echo $i; ?> / 5
-                            </option>
-                        <?php endfor; ?>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="titre">Titre</label>
+                        <input type="text" id="titre" name="titre"
+                               value="<?php echo htmlspecialchars($_POST['titre'] ?? $avis['titre']); ?>"
+                               required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="texte">Votre avis</label>
-                    <textarea id="texte" name="texte" rows="8" required><?php echo htmlspecialchars($_POST['texte'] ?? $avis['texte']); ?></textarea>
-                </div>
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <select id="note" name="note" required>
+                            <?php for ($i = 5; $i >= 1; $i--): ?>
+                                <option value="<?php echo $i; ?>"
+                                    <?php if ((int)($_POST['note'] ?? $avis['note']) === $i) echo 'selected'; ?>>
+                                    <?php echo $i; ?> / 5
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
 
-                <div class="form-actions">
-                    <a href="article.php?id=<?php echo $avis['id_article']; ?>" class="btn-login">Annuler</a>
-                    <button type="submit" class="btn-primary">Enregistrer</button>
-                </div>
+                    <div class="form-group">
+                        <label for="texte">Votre avis</label>
+                        <textarea id="texte" name="texte" rows="8" required><?php echo htmlspecialchars($_POST['texte'] ?? $avis['texte']); ?></textarea>
+                    </div>
 
-            </form>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Enregistrer</button>
+                        <a href="article.php?id=<?php echo $avis['id_article']; ?>" class="btn-login">Annuler</a>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </main>
 

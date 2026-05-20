@@ -30,16 +30,9 @@ if (!estAdmin() && !estAuteur($conn, $id_article, $_SESSION['id_utilisateur'])) 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ok = supprimerArticle($conn, $id_article);
-
     closeDB($conn);
-
-    if ($ok) {
-        header('Location: index.php');
-        exit;
-    } else {
-        header('Location: index.php?erreur=suppression');
-        exit;
-    }
+    header($ok ? 'Location: index.php' : 'Location: index.php?erreur=suppression');
+    exit;
 }
 
 closeDB($conn);
@@ -51,30 +44,30 @@ closeDB($conn);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supprimer l'article - Bwat Let</title>
     <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php include("static/header.php"); ?>
-    <?php include("static/nav.php"); ?>
 
     <main>
-        <div class="container form-page">
-            <h2>Supprimer l'article</h2>
+        <div class="container">
+            <div class="form-page">
 
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-triangle"></i>
-                Êtes-vous sûr de vouloir supprimer l'article
-                <strong><?php echo htmlspecialchars($article['titreArticle']); ?></strong> ?
-                <br>Cette action est irréversible.
+                <h2>Supprimer l'article</h2>
+
+                <p class="alert alert-error">
+                    Êtes-vous sûr de vouloir supprimer
+                    <strong>«&nbsp;<?php echo htmlspecialchars($article['titreArticle']); ?>&nbsp;»</strong> ?
+                    Cette action est irréversible.
+                </p>
+
+                <form method="POST" action="supprimer_article.php?id=<?php echo $id_article; ?>">
+                    <div class="form-actions">
+                        <button type="submit" class="btn-danger">Supprimer définitivement</button>
+                        <a href="article.php?id=<?php echo $id_article; ?>" class="btn-login">Annuler</a>
+                    </div>
+                </form>
+
             </div>
-
-            <form method="POST" action="supprimer_article.php?id=<?php echo $id_article; ?>">
-                <div class="form-actions">
-                    <a href="article.php?id=<?php echo $id_article; ?>" class="btn-login">Annuler</a>
-                    <button type="submit" class="btn-danger">Supprimer définitivement</button>
-                </div>
-            </form>
-
         </div>
     </main>
 

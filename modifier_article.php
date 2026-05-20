@@ -4,8 +4,7 @@ require_once("includes/auth.php");
 require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 
-// Seuls les rédacteurs et admins peuvent modifier
-exigerRole(2); 
+exigerRole(2);
 
 $id_article = (int) ($_GET['id'] ?? 0);
 
@@ -16,9 +15,7 @@ if ($id_article <= 0) {
 
 $erreur = '';
 $conn   = connectionDB();
-
-// Récupérer l'article existant pour pré-remplir le formulaire
-$article = getArticle($conn, $id_article) ?? null;
+$article = getArticle($conn, $id_article);
 
 if ($article === null) {
     closeDB($conn);
@@ -26,17 +23,13 @@ if ($article === null) {
     exit;
 }
 
-// Vérifier que l'utilisateur est l'auteur OU administrateur
-// Un rédacteur ne peut modifier QUE ses propres articles
 if (!estAdmin() && !estAuteur($conn, $id_article, $_SESSION['id_utilisateur'])) {
     closeDB($conn);
     header('Location: index.php?erreur=droits');
     exit;
 }
 
-// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     $titre   = trim($_POST['titre'] ?? '');
     $contenu = trim($_POST['contenu'] ?? '');
 
@@ -46,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erreur = 'Le contenu est obligatoire.';
     } else {
         $ok = modifierArticle($conn, $id_article, $titre, $contenu);
-
         if ($ok) {
             closeDB($conn);
             header('Location: article.php?id=' . $id_article);
@@ -66,47 +58,46 @@ closeDB($conn);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier l'article - Bwat Let</title>
     <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php include("static/header.php"); ?>
-    <?php include("static/nav.php"); ?>
 
     <main>
-        <div class="container form-page">
-            <h2>Modifier l'article</h2>
+        <div class="container">
+            <div class="form-page">
 
-            <?php if ($erreur !== ''): ?>
-                <p class="alert alert-error"><?php echo htmlspecialchars($erreur); ?></p>
-            <?php endif; ?>
+                <h2>Modifier l'article</h2>
 
-            <form method="POST" action="modifier_article.php?id=<?php echo $id_article; ?>" class="article-form">
+                <?php if ($erreur !== ''): ?>
+                    <p class="alert alert-error"><?php echo htmlspecialchars($erreur); ?></p>
+                <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="titre">Titre</label>
-                    <input type="text" id="titre" name="titre"
-                           value="<?php echo htmlspecialchars($_POST['titre'] ?? $article['titreArticle']); ?>"
-                           required>
-                </div>
+                <form method="POST" action="modifier_article.php?id=<?php echo $id_article; ?>">
 
-                <!-- Le film ne peut pas être changé après création -->
-                <div class="form-group">
-                    <label>Film</label>
-                    <p class="form-static"><?php echo htmlspecialchars($article['titreFilm']); ?></p>
-                </div>
+                    <div class="form-group">
+                        <label for="titre">Titre</label>
+                        <input type="text" id="titre" name="titre"
+                               value="<?php echo htmlspecialchars($_POST['titre'] ?? $article['titreArticle']); ?>"
+                               required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="contenu">Contenu</label>
-                    <textarea id="contenu" name="contenu"
-                              rows="12" required><?php echo htmlspecialchars($_POST['contenu'] ?? $article['contenu']); ?></textarea>
-                </div>
+                    <div class="form-group">
+                        <label>Film</label>
+                        <p class="form-static"><?php echo htmlspecialchars($article['titreFilm']); ?></p>
+                    </div>
 
-                <div class="form-actions">
-                    <a href="article.php?id=<?php echo $id_article; ?>" class="btn-login">Annuler</a>
-                    <button type="submit" class="btn-primary">Enregistrer</button>
-                </div>
+                    <div class="form-group">
+                        <label for="contenu">Contenu</label>
+                        <textarea id="contenu" name="contenu" rows="14" required><?php echo htmlspecialchars($_POST['contenu'] ?? $article['contenu']); ?></textarea>
+                    </div>
 
-            </form>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Enregistrer</button>
+                        <a href="article.php?id=<?php echo $id_article; ?>" class="btn-login">Annuler</a>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </main>
 
