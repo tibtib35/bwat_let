@@ -100,7 +100,7 @@ function getArticle($mysqli, $id) {
 function getAvisByArticle($mysqli, $id_article) {
     $id_article = (int) $id_article;
 
-    $sql = "SELECT avis.id_avis, avis.titre, avis.texte, avis.note, avis.dateCreation, utilisateurs.login AS auteur
+    $sql = "SELECT avis.id_avis, avis.id_utilisateur, avis.titre, avis.texte, avis.note, avis.dateCreation, utilisateurs.login AS auteur
             FROM avis
                 INNER JOIN utilisateurs ON avis.id_utilisateur = utilisateurs.id_utilisateur
             WHERE avis.id_article = $id_article
@@ -224,6 +224,58 @@ function creerAvis($mysqli, $id_article, $id_utilisateur, $titre, $texte, $note)
             VALUES ('$titre', '$texte', $note, NOW(), TRUE, $id_article, $id_utilisateur)";
 
     return writeDB($mysqli, $sql);
+}
+
+
+function getAvis($mysqli, $id_avis) {
+    $id_avis = (int) $id_avis;
+
+    $sql = "SELECT avis.id_avis, avis.id_utilisateur, avis.id_article, avis.titre, avis.texte, avis.note, avis.dateCreation
+            FROM avis
+            WHERE avis.id_avis = $id_avis";
+
+    $result = readDB($mysqli, $sql);
+    return $result[0] ?? null;
+}
+
+
+function modifierAvis($mysqli, $id_avis, $titre, $texte, $note) {
+    $id_avis = (int) $id_avis;
+    $note    = (int) $note;
+    $titre   = mysqli_real_escape_string($mysqli, $titre);
+    $texte   = mysqli_real_escape_string($mysqli, $texte);
+
+    if ($note < 1 || $note > 5) return false;
+
+    $sql = "UPDATE avis
+            SET titre = '$titre',
+                texte = '$texte',
+                note  = $note
+            WHERE id_avis = $id_avis";
+
+    return writeDB($mysqli, $sql);
+}
+
+
+function supprimerAvis($mysqli, $id_avis) {
+    $id_avis = (int) $id_avis;
+
+    $sql = "DELETE FROM avis WHERE id_avis = $id_avis";
+
+    return writeDB($mysqli, $sql);
+}
+
+
+function estAuteurAvis($mysqli, $id_avis, $id_utilisateur) {
+    $id_avis        = (int) $id_avis;
+    $id_utilisateur = (int) $id_utilisateur;
+
+    $sql = "SELECT id_avis FROM avis
+            WHERE id_avis       = $id_avis
+              AND id_utilisateur = $id_utilisateur";
+
+    $result = readDB($mysqli, $sql);
+    return !empty($result);
 }
 
 
