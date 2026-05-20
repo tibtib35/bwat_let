@@ -5,9 +5,9 @@ require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 
 // Seuls les rédacteurs et admins peuvent modifier
-/* TODO: appeler exigerRole() avec le bon rôle minimum */
+exigerRole(2); 
 
-$id_article = /* TODO: récupérer $_GET['id'] casté en (int), valeur par défaut 0 */ 0;
+$id_article = (int) ($_GET['id'] ?? 0);
 
 if ($id_article <= 0) {
     header('Location: index.php');
@@ -18,7 +18,7 @@ $erreur = '';
 $conn   = connectionDB();
 
 // Récupérer l'article existant pour pré-remplir le formulaire
-$article = /* TODO: appeler getArticle() */ null;
+$article = getArticle($conn, $id_article) ?? null;
 
 if ($article === null) {
     closeDB($conn);
@@ -28,18 +28,17 @@ if ($article === null) {
 
 // Vérifier que l'utilisateur est l'auteur OU administrateur
 // Un rédacteur ne peut modifier QUE ses propres articles
-if (/* TODO: vérifier que l'utilisateur n'est PAS admin (estAdmin())
-         ET qu'il n'est PAS l'auteur (estAuteur()) */ false) {
+if not (estAdmin() && estAuteur()) {
     closeDB($conn);
     header('Location: index.php?erreur=droits');
     exit;
 }
 
 // Traitement du formulaire
-if (/* TODO: vérifier que la méthode HTTP est POST */) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $titre   = /* TODO: trim($_POST['titre']) */ '';
-    $contenu = /* TODO: trim($_POST['contenu']) */ '';
+    $titre   = trim($_POST['titre'] ?? '');
+    $contenu = trim($_POST['contenu'] ?? '');
 
     if ($titre === '') {
         $erreur = 'Le titre est obligatoire.';
@@ -50,7 +49,8 @@ if (/* TODO: vérifier que la méthode HTTP est POST */) {
 
         if ($ok) {
             closeDB($conn);
-            // TODO: rediriger vers article.php avec l'id de l'article
+            header('Location: article.php?id=' . $id_article);
+            exit;
         } else {
             $erreur = 'Une erreur est survenue, veuillez réessayer.';
         }
