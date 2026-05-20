@@ -14,7 +14,6 @@ session_start();
 </head>
 <body>
     <?php require_once('./static/header.php'); ?>
-    <?php require_once('./static/nav.php'); ?>
     <main>
         <h2>Connexion</h2>
 

@@ -49,7 +49,6 @@ closeDB($conn);
 
 <body>
     <?php include("static/header.php"); ?>
-    <?php include("static/nav.php"); ?>
 
     <main>
 
