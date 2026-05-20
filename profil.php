@@ -49,13 +49,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     } elseif (empty($new_prenom)) {
         $error = 'Le prénom est requis.';
     } else {
-        // TODO: Mettre à jour la base de données
-        // UPDATE utilisateurs SET nom = ?, prenom = ?, email = ?, adresse = ? WHERE id_utilisateur = ?
-        $success = 'Profil mis à jour avec succès !';
-        $user['nom'] = htmlspecialchars($new_nom);
-        $user['prenom'] = htmlspecialchars($new_prenom);
-        $user['email'] = htmlspecialchars($new_email);
-        $user['adresse'] = htmlspecialchars($new_adresse);
+        // Mettre à jour la base de données
+        $mysqli = connectionDB();
+        $update_result = updateUserInfo($mysqli, $user_id, $new_nom, $new_prenom, $new_email, $new_adresse);
+        closeDB($mysqli);
+        
+        if ($update_result) {
+            $success = 'Profil mis à jour avec succès !';
+            $user['nom'] = $new_nom;
+            $user['prenom'] = $new_prenom;
+            $user['email'] = $new_email;
+            $user['adresse'] = $new_adresse;
+        } else {
+            $error = 'Erreur lors de la mise à jour du profil.';
+        }
     }
 }
 
