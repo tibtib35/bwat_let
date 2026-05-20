@@ -31,7 +31,7 @@ require_once("php/functions_structure.php");
             <div class="accueil-content">
                 <h1>Cataloguez vos films préférés</h1>
                 <p>Bienvenue sur Bwat Let</p>
-                <a href="php/signup.php" class="btn-primary">S'inscrire</a>
+                <a href="inscription.php" class="btn-primary">S'inscrire</a>
             </div>
             <div class="accueil-background">
                 <div class="accueil-overlay"></div>
