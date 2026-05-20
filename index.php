@@ -1,15 +1,41 @@
 <?php
-
-
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+session_start();
 require_once("includes/constantes.php");
 require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 require_once("php/functions_structure.php");
 
 
-?>
+$limite = 6; 
+$page   = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$genre  = isset($_GET['genre']) ? (int) $_GET['genre'] : 0;
 
+
+$conn = connectionDB();
+
+// --- Récupération des articles ---
+// Si une recherche est active, on filtre — sinon on prend tout
+if ($search !== '' || $genre > 0) {
+    $articles   = getArticlesByRecherche($conn, $search, $genre, $page, $limite);
+    $nbArticles = getNbArticlesByRecherche($conn, $search, $genre);
+} else {
+    $articles   = getArticles($conn, $page, $limite);
+    $nbArticles = getNbArticles($conn);
+}
+
+
+$nbPages = ceil($nbArticles / $limite);
+
+
+$genres = getGenres($conn);
+
+
+closeDB($conn);
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -26,7 +52,8 @@ require_once("php/functions_structure.php");
     <?php include("static/nav.php"); ?>
 
     <main>
-        <!-- Visible que si on est pas connecté -->
+
+        <?php if (!isset($_SESSION['id_utilisateur'])): ?>
         <section class="accueil">
             <div class="accueil-content">
                 <h1>Cataloguez vos films préférés</h1>
@@ -37,73 +64,56 @@ require_once("php/functions_structure.php");
                 <div class="accueil-overlay"></div>
             </div>
         </section>
+        <?php endif; ?>
 
 
         <section class="recent-articles" id="films">
             <div class="container">
                 <h2>Articles Récents</h2>
+
+                
+                <form method="GET" action="index.php" class="search-form">
+
+                    <input type="text"
+                           name="search"
+                           placeholder="Rechercher un film..."
+                           value="<?php echo htmlspecialchars($search); ?>">
+
+                    <select name="genre">
+                        <option value="0">Tous les genres</option>
+                        <?php foreach ($genres as $g): ?>
+                            <option value="<?php echo $g['id_genre']; ?>"
+                                <?php if ($g['id_genre'] == $genre): ?>
+                                    selected
+                                <?php endif; ?>>
+                                <?php echo htmlspecialchars($g['nomGenre']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <button type="submit">Rechercher</button>
+
+                </form>
+
                 <div class="articles-grid">
-                    <?php for ($i = 1; $i <= 6; $i++): ?>
-                        <article class="article-card">
-                            <div class="article-image">
-                                <img src="https://via.placeholder.com/400x250?text=Article+<?php echo $i; ?>"
-                                    alt="Article <?php echo $i; ?>">
-                                <span class="article-category">Cinéma</span>
-                            </div>
-                            <div class="article-content">
-                                <h3>Titre de l'article <?php echo $i; ?></h3>
-                                <div class="article-meta">
-                                    <span class="article-date">
-                                        <i class="fas fa-calendar"></i>
-                                        <?php echo date('d M Y', strtotime("-" . (7 - $i) . " days")); ?>
-                                    </span>
-                                    <span class="article-author">
-                                        <i class="fas fa-user"></i>
-                                        Auteur <?php echo $i; ?>
-                                    </span>
-                                </div>
-                                <p class="article-excerpt">Découvrez les dernières nouveautés du cinéma, les critiques des
-                                    films à l'affiche et bien d'autres contenus passionnants...</p>
-                                <a href="#" class="read-more">Lire l'article <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </article>
-                    <?php endfor; ?>
+                    <?php if (empty($articles)): ?>
+                        <p>Aucun article trouvé.</p>
+                    <?php else: ?>
+                        <?php foreach ($articles as $article): ?>
+                            <?php afficherCarteArticle($article); ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-            </div>
-        </section>
 
+                <?php 
+                    afficherPagination($page, $nbPages, ['search' => $search, 'genre' => $genre]);
+                ?>
 
-        <section class="popular-films" id="populaires">
-            <div class="container">
-                <h2>Films Populaires</h2>
-                <div class="films-grid">
-                    <?php for ($i = 1; $i <= 8; $i++): ?>
-                        <a href="article.php?id=<?php echo $i; ?>" class="film-card-link">
-                            <div class="film-card">
-                                <div class="film-poster">
-                                    <img src="https://via.placeholder.com/200x300?text=Film+<?php echo $i; ?>"
-                                        alt="Film <?php echo $i; ?>">
-                                    <div class="film-overlay">
-                                        <div class="film-rating">
-                                            <span class="stars">★★★★★</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="film-info">
-                                    <h3>Titre du Film <?php echo $i; ?></h3>
-                                    <p class="year">2024</p>
-                                    <div class="user-ratings">
-                                        <span class="rating-stars">⭐ 8.5/10</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    <?php endfor; ?>
-                </div>
             </div>
         </section>
 
     </main>
+
     <?php include("static/footer.php"); ?>
 
 </body>
