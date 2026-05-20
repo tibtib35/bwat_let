@@ -81,10 +81,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     } elseif ($new_password !== $confirm_password) {
         $error = 'Les mots de passe ne correspondent pas.';
     } else {
-        // TODO: Vérifier l'ancien mot de passe et mettre à jour
-        // Vérifier que old_password correspond au mot de passe dans la BD (avec password_verify)
-        // UPDATE utilisateurs SET mdp = ? WHERE id_utilisateur = ?
-        $success = 'Mot de passe changé avec succès !';
+        // Vérifier que l'ancien mot de passe est correct
+        if ($old_password === $user['mdp']) {
+            // Vérifier que le nouveau mot de passe est différent de l'ancien
+            if ($new_password === $user['mdp']) {
+                $error = 'Le nouveau mot de passe doit être différent de l\'ancien.';
+            } else {
+                // Mettre à jour le mot de passe
+                $mysqli = connectionDB();
+                $update_result = updateUserPassword($mysqli, $user_id, $new_password);
+                closeDB($mysqli);
+                
+                if ($update_result) {
+                    $success = 'Mot de passe changé avec succès !';
+                    // Récupérer les infos actualisées
+                    $mysqli = connectionDB();
+                    $user = getUserInfo($mysqli, $user_id);
+                    closeDB($mysqli);
+                } else {
+                    $error = 'Erreur lors de la mise à jour du mot de passe.';
+                }
+            }
+        } else {
+            $error = 'L\'ancien mot de passe est incorrect.';
+        }
     }
 }
 
