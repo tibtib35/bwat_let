@@ -124,7 +124,7 @@ CREATE TABLE `avis` (
     `id_avis` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `titre` VARCHAR(255) NOT NULL,
     `texte` TEXT NOT NULL,
-    `note` TINYINT UNSIGNED NOT NULL CHECK (`note` BETWEEN 0 AND 10),
+    `note` TINYINT UNSIGNED NOT NULL CHECK (`note` BETWEEN 0 AND 5),
     `dateCreation` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `visible` BOOLEAN NOT NULL DEFAULT TRUE,
     `id_article` BIGINT UNSIGNED NOT NULL,
@@ -146,9 +146,8 @@ CREATE TABLE `favoris` (
 -- INSERTION des données
 -- ============================================================
 
--- Rôles (1=Visiteur, 2=Membre, 3=Rédacteur, 4=Administrateur)
+-- Rôles (1=Membre, 2=Rédacteur, 3=Administrateur)
 INSERT INTO `role` (nomRole) VALUES
-('Visiteur'),
 ('Membre'),
 ('Rédacteur'),
 ('Administrateur');
@@ -245,14 +244,14 @@ INSERT INTO `joueDans` (id_acteur, id_film) VALUES
 (15, 8), (16, 8);
 
 -- Utilisateurs (mdp = hash bcrypt de 'password123')
--- 1=Administrateur | 2,3=Rédacteur | 4,5,6=Membre
+-- 1=Membre | 2=Rédacteur | 3=Administrateur
 INSERT INTO `utilisateurs` (nom, prenom, login, mdp, email, adresse, dateNaissance, dateCreation, derniereConnexion, id_role) VALUES
-('Dupont',  'Alice',  'alice_d',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'alice.dupont@email.com',  '12 rue des Lilas, Paris',           '1995-03-15', '2025-01-10 09:00:00', '2025-05-01 14:22:00', 4),
-('Martin',  'Bob',    'bob_m',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'bob.martin@email.com',    '5 avenue Victor Hugo, Lyon',        '1990-07-22', '2025-01-15 11:30:00', '2025-05-02 10:15:00', 3),
-('Leroy',   'Clara',  'clara_l',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'clara.leroy@email.com',   '8 boulevard Gambetta, Bordeaux',    '1998-11-05', '2025-02-01 08:45:00', '2025-05-03 16:40:00', 3),
-('Bernard', 'David',  'david_b',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'david.bernard@email.com', '22 rue de la Paix, Marseille',      '1985-04-18', '2025-02-10 14:00:00', '2025-04-30 09:00:00', 2),
-('Petit',   'Emma',   'emma_p',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'emma.petit@email.com',    '3 place du Capitole, Toulouse',     '2000-09-12', '2025-03-05 17:20:00', '2025-05-04 11:30:00', 2),
-('Moreau',  'Félix',  'felix_m',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'felix.moreau@email.com',  '15 rue Saint-Denis, Nantes',        '1993-06-30', '2025-03-20 10:10:00', '2025-05-01 08:55:00', 2);
+('Dupont',  'Alice',  'alice_d',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'alice.dupont@email.com',  '12 rue des Lilas, Paris',           '1995-03-15', '2025-01-10 09:00:00', '2025-05-01 14:22:00', 3),
+('Martin',  'Bob',    'bob_m',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'bob.martin@email.com',    '5 avenue Victor Hugo, Lyon',        '1990-07-22', '2025-01-15 11:30:00', '2025-05-02 10:15:00', 2),
+('Leroy',   'Clara',  'clara_l',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'clara.leroy@email.com',   '8 boulevard Gambetta, Bordeaux',    '1998-11-05', '2025-02-01 08:45:00', '2025-05-03 16:40:00', 2),
+('Bernard', 'David',  'david_b',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'david.bernard@email.com', '22 rue de la Paix, Marseille',      '1985-04-18', '2025-02-10 14:00:00', '2025-04-30 09:00:00', 1),
+('Petit',   'Emma',   'emma_p',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'emma.petit@email.com',    '3 place du Capitole, Toulouse',     '2000-09-12', '2025-03-05 17:20:00', '2025-05-04 11:30:00', 1),
+('Moreau',  'Félix',  'felix_m',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'felix.moreau@email.com',  '15 rue Saint-Denis, Nantes',        '1993-06-30', '2025-03-20 10:10:00', '2025-05-01 08:55:00', 1);
 
 -- Articles (rédigés par bob_m=2 et clara_l=3, un seul par film)
 INSERT INTO `article` (titre, contenu, dateCreation, dateModification, id_utilisateur, id_film) VALUES
@@ -265,36 +264,36 @@ INSERT INTO `article` (titre, contenu, dateCreation, dateModification, id_utilis
 ('Le Silence des Agneaux : le frisson parfait',      'Un des rares films à avoir remporté les cinq Oscars majeurs. L\'alchimie entre Jodie Foster et Anthony Hopkins est absolument glaçante. Chaque scène entre Clarice et Hannibal Lecter est un duel psychologique d\'une intensité rare. Un thriller qui a défini le genre.',                                                                                                                     '2025-03-20 15:00:00', '2025-03-20 15:00:00', 2, 7),
 ('Pulp Fiction : l\'œuvre totale de Tarantino',      'Pulp Fiction a révolutionné le cinéma des années 90. Une narration éclatée, des dialogues ciselés au scalpel et un casting de légende pour un film culte absolu. Tarantino prouve ici qu\'il est possible de parler de violence et d\'humanité avec le même souffle. Un film inépuisable.',                                                                                                   '2025-04-01 10:30:00', '2025-04-01 10:30:00', 3, 8);
 
--- Avis (note entre 0 et 10, un seul avis par utilisateur par article)
+-- Avis (note entre 0 et 5, un seul avis par utilisateur par article)
 -- Membres : david_b=4, emma_p=5, felix_m=6
 INSERT INTO `avis` (titre, texte, note, dateCreation, visible, id_article, id_utilisateur) VALUES
 -- Article 1 — Inception
-('Un chef-d\'œuvre absolu',        'Je suis ressorti de la salle complètement abasourdi. Un film qui se mérite, à voir absolument plusieurs fois.',            10, '2025-01-21 12:00:00', TRUE, 1, 4),
-('Trop complexe pour moi',         'Visuellement époustouflant mais je me suis perdu dans les niveaux de rêves. Difficile à suivre.',                           6,  '2025-01-22 09:30:00', TRUE, 1, 5),
-('Nolan au sommet de son art',     'Une maîtrise technique et narrative sans faille. DiCaprio est excellent. La fin reste ouverte à l\'interprétation.',        9,  '2025-01-23 14:00:00', TRUE, 1, 6),
+('Un chef-d\'œuvre absolu',        'Je suis ressorti de la salle complètement abasourdi. Un film qui se mérite, à voir absolument plusieurs fois.',            5, '2025-01-21 12:00:00', TRUE, 1, 4),
+('Trop complexe pour moi',         'Visuellement époustouflant mais je me suis perdu dans les niveaux de rêves. Difficile à suivre.',                          3, '2025-01-22 09:30:00', TRUE, 1, 5),
+('Nolan au sommet de son art',     'Une maîtrise technique et narrative sans faille. DiCaprio est excellent. La fin reste ouverte à l\'interprétation.',       5, '2025-01-23 14:00:00', TRUE, 1, 6),
 -- Article 2 — Intouchables
-('Touchant et drôle à la fois',    'L\'un des films français les plus touchants que j\'ai vus. Omar Sy est extraordinaire, naturel et attachant.',              9,  '2025-01-26 10:00:00', TRUE, 2, 4),
-('Un feel-good movie parfait',     'Je l\'ai regardé en famille, on a tous pleuré et ri. Une histoire vraie qui rend le film encore plus fort.',                10, '2025-01-27 16:00:00', TRUE, 2, 5),
-('Émotion garantie',               'Difficile de rester insensible. La relation entre les deux personnages est d\'une justesse rare.',                          8,  '2025-01-28 11:00:00', TRUE, 2, 6),
+('Touchant et drôle à la fois',    'L\'un des films français les plus touchants que j\'ai vus. Omar Sy est extraordinaire, naturel et attachant.',             5, '2025-01-26 10:00:00', TRUE, 2, 4),
+('Un feel-good movie parfait',     'Je l\'ai regardé en famille, on a tous pleuré et ri. Une histoire vraie qui rend le film encore plus fort.',               5, '2025-01-27 16:00:00', TRUE, 2, 5),
+('Émotion garantie',               'Difficile de rester insensible. La relation entre les deux personnages est d\'une justesse rare.',                         4, '2025-01-28 11:00:00', TRUE, 2, 6),
 -- Article 3 — Parasite
-('Un choc cinématographique',      'Bong Joon-ho nous prend par surprise à chaque tournant. Une œuvre magistrale qui méritait tous ses prix.',                 10, '2025-02-06 11:00:00', TRUE, 3, 4),
-('Bien mais un peu surestimé',     'Très bon film mais je ne comprends pas tout l\'engouement. La fin m\'a laissé perplexe.',                                  7,  '2025-02-07 14:30:00', TRUE, 3, 6),
+('Un choc cinématographique',      'Bong Joon-ho nous prend par surprise à chaque tournant. Une œuvre magistrale qui méritait tous ses prix.',                5, '2025-02-06 11:00:00', TRUE, 3, 4),
+('Bien mais un peu surestimé',     'Très bon film mais je ne comprends pas tout l\'engouement. La fin m\'a laissé perplexe.',                                  4, '2025-02-07 14:30:00', TRUE, 3, 6),
 -- Article 4 — The Dark Knight
-('Heath Ledger, une légende',      'La performance de Heath Ledger restera dans l\'histoire. Un Joker iconique pour un film iconique. Frissons garantis.',      10, '2025-02-16 09:00:00', TRUE, 4, 5),
-('Le meilleur film de super-héros','Bien loin des blockbusters classiques, The Dark Knight est un vrai film de cinéma. Intelligent et intense.',                10, '2025-02-17 11:00:00', TRUE, 4, 6),
-('Magistral',                      'Nolan redéfinit le genre. On oublie qu\'on regarde un film de super-héros tellement c\'est prenant.',                      9,  '2025-02-18 15:00:00', TRUE, 4, 4),
+('Heath Ledger, une légende',      'La performance de Heath Ledger restera dans l\'histoire. Un Joker iconique pour un film iconique. Frissons garantis.',     5, '2025-02-16 09:00:00', TRUE, 4, 5),
+('Le meilleur film de super-héros','Bien loin des blockbusters classiques, The Dark Knight est un vrai film de cinéma. Intelligent et intense.',               5, '2025-02-17 11:00:00', TRUE, 4, 6),
+('Magistral',                      'Nolan redéfinit le genre. On oublie qu\'on regarde un film de super-héros tellement c\'est prenant.',                     5, '2025-02-18 15:00:00', TRUE, 4, 4),
 -- Article 5 — Interstellar
-('Émotionnellement dévastateur',   'La scène des messages vidéo m\'a arraché des larmes. Un film d\'une beauté et d\'une profondeur rares.',                   9,  '2025-03-02 10:00:00', TRUE, 5, 4),
-('Un peu trop long',               'Des longueurs dans le dernier acte mais globalement un film impressionnant et ambitieux.',                                  7,  '2025-03-03 15:00:00', TRUE, 5, 5),
+('Émotionnellement dévastateur',   'La scène des messages vidéo m\'a arraché des larmes. Un film d\'une beauté et d\'une profondeur rares.',                  5, '2025-03-02 10:00:00', TRUE, 5, 4),
+('Un peu trop long',               'Des longueurs dans le dernier acte mais globalement un film impressionnant et ambitieux.',                                  4, '2025-03-03 15:00:00', TRUE, 5, 5),
 -- Article 6 — Amélie Poulain
-('La France comme on l\'aime',     'Un film plein de poésie et de couleurs. On ressort avec le sourire. Jeunet est un vrai magicien de l\'image.',             9,  '2025-03-11 09:00:00', TRUE, 6, 4),
-('Un classique intemporel',        'Audrey Tautou est inoubliable dans ce rôle. Paris n\'a jamais été aussi beau et vivant.',                                  8,  '2025-03-12 14:00:00', TRUE, 6, 6),
+('La France comme on l\'aime',     'Un film plein de poésie et de couleurs. On ressort avec le sourire. Jeunet est un vrai magicien de l\'image.',            5, '2025-03-11 09:00:00', TRUE, 6, 4),
+('Un classique intemporel',        'Audrey Tautou est inoubliable dans ce rôle. Paris n\'a jamais été aussi beau et vivant.',                                  4, '2025-03-12 14:00:00', TRUE, 6, 6),
 -- Article 7 — Le Silence des Agneaux
-('Glaçant de bout en bout',        'Hopkins et Foster forment un duo inoubliable. Un thriller psychologique d\'exception qui ne vieillit pas.',                 10, '2025-03-21 10:00:00', TRUE, 7, 5),
-('Pas pour les âmes sensibles',    'Brillant mais vraiment angoissant. À ne pas regarder seul la nuit. Une maîtrise absolue du suspense.',                     8,  '2025-03-22 16:00:00', TRUE, 7, 6),
+('Glaçant de bout en bout',        'Hopkins et Foster forment un duo inoubliable. Un thriller psychologique d\'exception qui ne vieillit pas.',                5, '2025-03-21 10:00:00', TRUE, 7, 5),
+('Pas pour les âmes sensibles',    'Brillant mais vraiment angoissant. À ne pas regarder seul la nuit. Une maîtrise absolue du suspense.',                    4, '2025-03-22 16:00:00', TRUE, 7, 6),
 -- Article 8 — Pulp Fiction
-('Révolutionnaire',                'Tarantino a changé le cinéma à jamais avec ce film. Chaque scène est culte, chaque dialogue est ciselé.',                  10, '2025-04-02 11:00:00', TRUE, 8, 4),
-('Un film culte pleinement justifié','Les dialogues sont d\'une richesse incroyable. Une expérience unique que tout cinéphile se doit de vivre.',               9,  '2025-04-03 14:00:00', TRUE, 8, 5);
+('Révolutionnaire',                'Tarantino a changé le cinéma à jamais avec ce film. Chaque scène est culte, chaque dialogue est ciselé.',                 5, '2025-04-02 11:00:00', TRUE, 8, 4),
+('Un film culte pleinement justifié','Les dialogues sont d\'une richesse incroyable. Une expérience unique que tout cinéphile se doit de vivre.',              5, '2025-04-03 14:00:00', TRUE, 8, 5);
 
 -- Favoris
 INSERT INTO `favoris` (id_utilisateur, id_film) VALUES
