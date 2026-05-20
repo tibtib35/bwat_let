@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once("includes/constantes.php");
 require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
@@ -17,24 +20,16 @@ $user_id = $_SESSION['id_utilisateur'];
 $error = '';
 $success = '';
 
-// TODO: Récupérer les informations de l'utilisateur depuis la base de données
-// SELECT u.*, r.nomRole FROM utilisateurs u 
-// LEFT JOIN role r ON u.id_role = r.id_role 
-// WHERE u.id_utilisateur = ?
+// Récupérer les informations de l'utilisateur depuis la base de données
+$mysqli = connectionDB();
+$user = getUserInfo($mysqli, $user_id);
+closeDB($mysqli);
 
-// Données de démonstration
-$user = [
-    'id_utilisateur' => 1,
-    'nom' => 'Dupont',
-    'prenom' => 'Jean',
-    'login' => 'jeandupont',
-    'email' => 'jean.dupont@example.com',
-    'adresse' => '123 Rue de la Paix, Paris',
-    'dateNaissance' => '1990-05-15',
-    'dateCreation' => '2025-01-10',
-    'derniereConnexion' => '2026-05-20 14:30:00',
-    'nomRole' => 'Utilisateur'
-];
+// Rediriger si l'utilisateur n'existe pas
+if (!$user) {
+    header('Location: index.php');
+    exit();
+}
 
 // Traiter les modifications du profil
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
@@ -101,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
 
 <body>
     <?php include("static/header.php"); ?>
-    <?php include("static/nav.php"); ?>
 
     <main>
         <section class="profile-section">
@@ -114,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
                         <h1>Bienvenue, <?php echo htmlspecialchars($user['prenom'] . ' ' . $user['nom']); ?> !</h1>
                         <p class="profile-role">
                             <i class="fas fa-shield-alt"></i>
-                            Rôle : <strong><?php echo htmlspecialchars($user['nomRole']); ?></strong>
+                            Rôle : <strong><?php echo htmlspecialchars($user['nomRole'] ?? 'Utilisateur'); ?></strong>
                         </p>
                     </div>
                 </div>
