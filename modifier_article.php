@@ -1,0 +1,115 @@
+<?php
+session_start();
+require_once("includes/auth.php");
+require_once("includes/functions-DB.php");
+require_once("php/functions_query.php");
+
+// Seuls les rédacteurs et admins peuvent modifier
+/* TODO: appeler exigerRole() avec le bon rôle minimum */
+
+$id_article = /* TODO: récupérer $_GET['id'] casté en (int), valeur par défaut 0 */ 0;
+
+if ($id_article <= 0) {
+    header('Location: index.php');
+    exit;
+}
+
+$erreur = '';
+$conn   = connectionDB();
+
+// Récupérer l'article existant pour pré-remplir le formulaire
+$article = /* TODO: appeler getArticle() */ null;
+
+if ($article === null) {
+    closeDB($conn);
+    header('Location: index.php');
+    exit;
+}
+
+// Vérifier que l'utilisateur est l'auteur OU administrateur
+// Un rédacteur ne peut modifier QUE ses propres articles
+if (/* TODO: vérifier que l'utilisateur n'est PAS admin (estAdmin())
+         ET qu'il n'est PAS l'auteur (estAuteur()) */ false) {
+    closeDB($conn);
+    header('Location: index.php?erreur=droits');
+    exit;
+}
+
+// Traitement du formulaire
+if (/* TODO: vérifier que la méthode HTTP est POST */) {
+
+    $titre   = /* TODO: trim($_POST['titre']) */ '';
+    $contenu = /* TODO: trim($_POST['contenu']) */ '';
+
+    if ($titre === '') {
+        $erreur = 'Le titre est obligatoire.';
+    } elseif ($contenu === '') {
+        $erreur = 'Le contenu est obligatoire.';
+    } else {
+        $ok = modifierArticle($conn, $id_article, $titre, $contenu);
+
+        if ($ok) {
+            closeDB($conn);
+            // TODO: rediriger vers article.php avec l'id de l'article
+        } else {
+            $erreur = 'Une erreur est survenue, veuillez réessayer.';
+        }
+    }
+}
+
+closeDB($conn);
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier l'article - Bwat Let</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <?php include("static/header.php"); ?>
+    <?php include("static/nav.php"); ?>
+
+    <main>
+        <div class="container form-page">
+            <h2>Modifier l'article</h2>
+
+            <?php if ($erreur !== ''): ?>
+                <p class="alert alert-error"><?php echo htmlspecialchars($erreur); ?></p>
+            <?php endif; ?>
+
+            <form method="POST" action="modifier_article.php?id=<?php echo $id_article; ?>" class="article-form">
+
+                <div class="form-group">
+                    <label for="titre">Titre</label>
+                    <input type="text" id="titre" name="titre"
+                           value="<?php echo htmlspecialchars($_POST['titre'] ?? $article['titreArticle']); ?>"
+                           required>
+                </div>
+
+                <!-- Le film ne peut pas être changé après création -->
+                <div class="form-group">
+                    <label>Film</label>
+                    <p class="form-static"><?php echo htmlspecialchars($article['titreFilm']); ?></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="contenu">Contenu</label>
+                    <textarea id="contenu" name="contenu"
+                              rows="12" required><?php echo htmlspecialchars($_POST['contenu'] ?? $article['contenu']); ?></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <a href="article.php?id=<?php echo $id_article; ?>" class="btn-login">Annuler</a>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <?php include("static/footer.php"); ?>
+</body>
+</html>

@@ -156,4 +156,92 @@ function getActeursByFilm($conn, $id_film) {
 
     return readDB($conn, $sql);
 }
+
+
+// ============================================================
+// V3 — Fonctions CRUD articles (Dev A)
+// ============================================================
+
+// Retourne tous les films (pour le menu déroulant de création d'article)
+// Filtre optionnel : exclut les films qui ont déjà un article
+function getFilmsSansArticle($conn) {
+    $sql = "SELECT film.id_film, film.titre
+            FROM film
+            WHERE film.id_film NOT IN (
+                SELECT id_film FROM article
+            )
+            ORDER BY film.titre ASC";
+
+    return readDB($conn, $sql);
+}
+
+
+// Insère un nouvel article en BDD
+// Retourne true si succès, false sinon
+// $titre, $contenu : données du formulaire
+// $id_utilisateur  : depuis $_SESSION['id_utilisateur']
+// $id_film         : depuis le formulaire
+function creerArticle($conn, $titre, $contenu, $id_utilisateur, $id_film) {
+    $titre          = mysqli_real_escape_string($conn, $titre);
+    $contenu        = mysqli_real_escape_string($conn, $contenu);
+    $id_utilisateur = (int) $id_utilisateur;
+    $id_film        = (int) $id_film;
+
+    $sql = "INSERT INTO article (titre, contenu, dateCreation, dateModification, id_utilisateur, id_film)
+            VALUES (
+                '$titre',
+                '$contenu',
+                NOW(),
+                NOW(),
+                $id_utilisateur,
+                $id_film
+            )";
+
+    return writeDB($conn, $sql);
+}
+
+
+// Met à jour le titre et le contenu d'un article existant
+// La vérification que l'utilisateur est bien l'auteur se fait AVANT d'appeler cette fonction
+// $id_article : depuis l'URL
+function modifierArticle($conn, $id_article, $titre, $contenu) {
+    $titre      = mysqli_real_escape_string($conn, $titre);
+    $contenu    = mysqli_real_escape_string($conn, $contenu);
+    $id_article = (int) $id_article;
+
+    $sql = "UPDATE article
+            SET titre             = '$titre',
+                contenu           = '$contenu',
+                dateModification  = NOW()
+            WHERE id_article = $id_article";
+
+    return writeDB($conn, $sql);
+}
+
+
+// Supprime un article par son id
+// La vérification des droits se fait AVANT d'appeler cette fonction
+function supprimerArticle($conn, $id_article) {
+    $id_article = (int) $id_article;
+
+    $sql = "DELETE FROM article WHERE id_article = $id_article";
+
+    return writeDB($conn, $sql);
+}
+
+
+// Vérifie si un utilisateur est l'auteur d'un article
+// Retourne true si $id_utilisateur est bien l'auteur de $id_article
+function estAuteur($conn, $id_article, $id_utilisateur) {
+    $id_article     = (int) $id_article;
+    $id_utilisateur = (int) $id_utilisateur;
+
+    $sql = "SELECT id_article FROM article
+            WHERE id_article     = $id_article
+              AND id_utilisateur = $id_utilisateur";
+
+    $result = readDB($conn, $sql);
+
+    return !empty($result);
+}
 ?>
