@@ -1,5 +1,5 @@
 <?php
-require_once('../includes/functions-DB.php');
+require_once(__DIR__ . '/../includes/functions-DB.php');
 
 // Retourne un tableau d'articles avec le titre du film et le login de l'auteur
 // Triés par dateCreation, limités pour la pagination
@@ -59,7 +59,7 @@ function getArticlesByRecherche($conn, $search, $genre, $page, $limite) {
 }
 
 
-// Retourne le nombre d'articles correspondant à une recherche (pour la pagination filtrée)
+
 function getNbArticlesByRecherche($conn, $search, $genre) {
     $search = mysqli_real_escape_string($conn, $search);
 
