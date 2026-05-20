@@ -4,9 +4,9 @@ require_once("includes/auth.php");
 require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 
-/* TODO: appeler exigerRole() avec le bon rôle minimum */
+exigerRole(2);
 
-$id_article = /* TODO: récupérer $_GET['id'] casté en (int), valeur par défaut 0 */ 0;
+$id_article = (int) ($_GET['id'] ?? 0);
 
 if ($id_article <= 0) {
     header('Location: index.php');
@@ -14,7 +14,7 @@ if ($id_article <= 0) {
 }
 
 $conn    = connectionDB();
-$article = /* TODO: appeler getArticle() */ null;
+$article = getArticle($conn, $id_article);
 
 if ($article === null) {
     closeDB($conn);
@@ -22,21 +22,20 @@ if ($article === null) {
     exit;
 }
 
-// Vérifier les droits : auteur OU administrateur
-if (/* TODO: même vérification que dans modifier_article.php */ false) {
+if (!estAdmin() && !estAuteur($conn, $id_article, $_SESSION['id_utilisateur'])) {
     closeDB($conn);
     header('Location: index.php?erreur=droits');
     exit;
 }
 
-// Traitement : suppression confirmée via POST
-if (/* TODO: vérifier que la méthode HTTP est POST */) {
-    $ok = /* TODO: appeler supprimerArticle() */ false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ok = supprimerArticle($conn, $id_article);
 
     closeDB($conn);
 
     if ($ok) {
-        // TODO: rediriger vers index.php
+        header('Location: index.php');
+        exit;
     } else {
         header('Location: index.php?erreur=suppression');
         exit;
@@ -69,7 +68,6 @@ closeDB($conn);
                 <br>Cette action est irréversible.
             </div>
 
-            <!-- Formulaire de confirmation : un bouton POST pour confirmer -->
             <form method="POST" action="supprimer_article.php?id=<?php echo $id_article; ?>">
                 <div class="form-actions">
                     <a href="article.php?id=<?php echo $id_article; ?>" class="btn-login">Annuler</a>
