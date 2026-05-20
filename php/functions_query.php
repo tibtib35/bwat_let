@@ -341,6 +341,20 @@ function login($mysqli, $login, $password)
     return $result[0] ?? null;
 
  }
-?>
 
+ function updateUserInfo($mysqli, $id_utilisateur, $nom, $prenom, $email, $adresse) {
+    $id_utilisateur = (int) $id_utilisateur;
+    $nom            = mysqli_real_escape_string($mysqli, $nom);
+    $prenom         = mysqli_real_escape_string($mysqli, $prenom);
+    $email          = mysqli_real_escape_string($mysqli, $email);
+    $adresse        = mysqli_real_escape_string($mysqli, $adresse);
 
+    $sql = "UPDATE utilisateurs
+            SET nom             = '$nom',
+                prenom          = '$prenom',
+                email           = '$email',
+                adresse         = '$adresse'
+            WHERE id_utilisateur = $id_utilisateur";
+
+    return writeDB($mysqli, $sql);
+}
