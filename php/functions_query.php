@@ -330,7 +330,7 @@ function login($mysqli, $login, $password)
  function getUserInfo($mysqli, $id_utilisateur) {
     $id_utilisateur = (int) $id_utilisateur;
 
-    $sql = "SELECT utilisateurs.id_utilisateur, utilisateurs.login, utilisateurs.nom, utilisateurs.prenom, utilisateurs.email, utilisateurs.adresse, utilisateurs.dateNaissance, utilisateurs.dateCreation, utilisateurs.derniereConnexion, utilisateurs.id_role, role.nomRole
+    $sql = "SELECT utilisateurs.id_utilisateur, utilisateurs.login, utilisateurs.nom, utilisateurs.prenom, utilisateurs.email, utilisateurs.adresse, utilisateurs.mdp, utilisateurs.dateNaissance, utilisateurs.dateCreation, utilisateurs.derniereConnexion, utilisateurs.id_role, role.nomRole
             FROM utilisateurs
             LEFT JOIN role ON utilisateurs.id_role = role.id_role
             WHERE utilisateurs.id_utilisateur = $id_utilisateur
@@ -353,8 +353,20 @@ function login($mysqli, $login, $password)
             SET nom             = '$nom',
                 prenom          = '$prenom',
                 email           = '$email',
-                adresse         = '$adresse'
+                adresse         = '$adresse',
             WHERE id_utilisateur = $id_utilisateur";
 
+    return writeDB($mysqli, $sql);
+}
+
+function updateUserPassword($mysqli, $id_utilisateur, $new_password) {
+    $id_utilisateur = (int) $id_utilisateur;
+    
+    $new_mdp = mysqli_real_escape_string($mysqli, $new_password);
+    
+    $sql = "UPDATE utilisateurs
+            SET mdp = '$new_mdp'
+            WHERE id_utilisateur = $id_utilisateur";
+    
     return writeDB($mysqli, $sql);
 }
