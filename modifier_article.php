@@ -28,7 +28,7 @@ if ($article === null) {
 
 // Vérifier que l'utilisateur est l'auteur OU administrateur
 // Un rédacteur ne peut modifier QUE ses propres articles
-if not (estAdmin() && estAuteur()) {
+if (!estAdmin() && !estAuteur($conn, $id_article, $_SESSION['id_utilisateur'])) {
     closeDB($conn);
     header('Location: index.php?erreur=droits');
     exit;

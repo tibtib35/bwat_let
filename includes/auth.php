@@ -1,5 +1,4 @@
 <?php
-session_start();
 function exigerConnexion() {
     if (!isset($_SESSION['id_utilisateur'])) {
         header('Location: ../connection.php');
