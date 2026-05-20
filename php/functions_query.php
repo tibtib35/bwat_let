@@ -14,30 +14,30 @@ function getArticles($conn, $page, $limite) {
             ORDER BY article.dateCreation DESC
             LIMIT $limite OFFSET $offset";
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
 
-function getNbArticles($conn) {
+function getNbArticles($mysqli) {
     $sql = "SELECT COUNT(*) AS total FROM article";
 
-    $result = readDB($conn, $sql);
+    $result = readDB($mysqli, $sql);
 
     return $result[0]['total'];
 }
 
 
-function getGenres($conn) {
+function getGenres($mysqli) {
     $sql = "SELECT id_genre, nomGenre FROM genre
             ORDER BY nomGenre ASC";
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
-function getArticlesByRecherche($conn, $search, $genre, $page, $limite) {
+function getArticlesByRecherche($mysqli, $search, $genre, $page, $limite) {
     $offset = ($page - 1) * $limite;
 
-    $search = mysqli_real_escape_string($conn, $search);
+    $search = mysqli_real_escape_string($mysqli, $search);
 
     $sql = "SELECT id_article, article.titre AS titreArticle, article.contenu, article.dateCreation,
                  film.titre AS titreFilm, film.affiche, genre.nomGenre, utilisateurs.login AS auteur
@@ -51,13 +51,13 @@ function getArticlesByRecherche($conn, $search, $genre, $page, $limite) {
             ORDER BY article.dateCreation DESC
             LIMIT $limite OFFSET $offset";
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
 
 
-function getNbArticlesByRecherche($conn, $search, $genre) {
-    $search = mysqli_real_escape_string($conn, $search);
+function getNbArticlesByRecherche($mysqli, $search, $genre) {
+    $search = mysqli_real_escape_string($mysqli, $search);
 
     $sql = "SELECT COUNT(*) AS total
             FROM article
@@ -68,7 +68,7 @@ function getNbArticlesByRecherche($conn, $search, $genre) {
                 " . ($search ? "AND film.titre LIKE '%$search%'" : "") . "
                 " . ($genre > 0 ? "AND genre.id_genre = $genre" : "") . ";";
 
-    $result = readDB($conn, $sql);
+    $result = readDB($mysqli, $sql);
     return $result[0]['total']; 
 }
 
@@ -79,7 +79,7 @@ function getNbArticlesByRecherche($conn, $search, $genre) {
 // Retourne un article complet avec les infos du film, du genre et de l'auteur
 // Retourne null si l'article n'existe pas
 // $id : id_article récupéré depuis l'URL
-function getArticle($conn, $id) {
+function getArticle($mysqli, $id) {
     $id = (int) $id;
 
     $sql = "SELECT id_article, article.titre AS titreArticle, article.contenu, article.dateCreation,
@@ -90,14 +90,14 @@ function getArticle($conn, $id) {
                 INNER JOIN utilisateurs ON article.id_utilisateur = utilisateurs.id_utilisateur
             WHERE article.id_article = $id";
 
-    $result = readDB($conn, $sql);
+    $result = readDB($mysqli, $sql);
 
     // readDB retourne un tableau : on veut juste le premier (et unique) résultat
     // Si le tableau est vide, l'article n'existe pas → on retourne null
     return $result[0] ?? null;
 }
 
-function getAvisByArticle($conn, $id_article) {
+function getAvisByArticle($mysqli, $id_article) {
     $id_article = (int) $id_article;
 
     $sql = "SELECT avis.id_avis, avis.titre, avis.texte, avis.note, avis.dateCreation, utilisateurs.login AS auteur
@@ -109,12 +109,12 @@ function getAvisByArticle($conn, $id_article) {
         
             
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
 
 
-function getMoyenneAvis($conn, $id_article) {
+function getMoyenneAvis($mysqli, $id_article) {
     $id_article = (int) $id_article;
 
     $sql = "SELECT AVG(note) AS moyenne, COUNT(*) AS nbAvis
@@ -122,7 +122,7 @@ function getMoyenneAvis($conn, $id_article) {
             WHERE id_article = $id_article
               AND visible = TRUE";
 
-    $result = readDB($conn, $sql);
+    $result = readDB($mysqli, $sql);
 
     return [
         'moyenne' => $result[0]['moyenne'] ?? 0,
@@ -130,7 +130,7 @@ function getMoyenneAvis($conn, $id_article) {
     ];
 }
 
-function getRealisateursByFilm($conn, $id_film) {
+function getRealisateursByFilm($mysqli, $id_film) {
     $id_film = (int) $id_film;
 
     $sql = "SELECT realisateurs.nom, realisateurs.prenom
@@ -138,11 +138,11 @@ function getRealisateursByFilm($conn, $id_film) {
                 INNER JOIN realise ON realisateurs.id_real = realise.id_real
             WHERE realise.id_film = $id_film";
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
 
-function getActeursByFilm($conn, $id_film) {
+function getActeursByFilm($mysqli, $id_film) {
     $id_film = (int) $id_film;
 
     $sql = "SELECT acteurs.nom, acteurs.prenom
@@ -150,10 +150,10 @@ function getActeursByFilm($conn, $id_film) {
                 INNER JOIN joueDans ON acteurs.id_acteur = joueDans.id_acteur
             WHERE joueDans.id_film = $id_film";
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
-function getFilmsSansArticle($conn) {
+function getFilmsSansArticle($mysqli) {
     $sql = "SELECT film.id_film, film.titre
             FROM film
             WHERE film.id_film NOT IN (
@@ -161,14 +161,14 @@ function getFilmsSansArticle($conn) {
             )
             ORDER BY film.titre ASC";
 
-    return readDB($conn, $sql);
+    return readDB($mysqli, $sql);
 }
 
 
 
-function creerArticle($conn, $titre, $contenu, $id_utilisateur, $id_film) {
-    $titre          = mysqli_real_escape_string($conn, $titre);
-    $contenu        = mysqli_real_escape_string($conn, $contenu);
+function creerArticle($mysqli, $titre, $contenu, $id_utilisateur, $id_film) {
+    $titre          = mysqli_real_escape_string($mysqli, $titre);
+    $contenu        = mysqli_real_escape_string($mysqli, $contenu);
     $id_utilisateur = (int) $id_utilisateur;
     $id_film        = (int) $id_film;
 
@@ -182,13 +182,13 @@ function creerArticle($conn, $titre, $contenu, $id_utilisateur, $id_film) {
                 $id_film
             )";
 
-    return writeDB($conn, $sql);
+    return writeDB($mysqli, $sql);
 }
 
 
-function modifierArticle($conn, $id_article, $titre, $contenu) {
-    $titre      = mysqli_real_escape_string($conn, $titre);
-    $contenu    = mysqli_real_escape_string($conn, $contenu);
+function modifierArticle($mysqli, $id_article, $titre, $contenu) {
+    $titre      = mysqli_real_escape_string($mysqli, $titre);
+    $contenu    = mysqli_real_escape_string($mysqli, $contenu);
     $id_article = (int) $id_article;
 
     $sql = "UPDATE article
@@ -197,21 +197,21 @@ function modifierArticle($conn, $id_article, $titre, $contenu) {
                 dateModification  = NOW()
             WHERE id_article = $id_article";
 
-    return writeDB($conn, $sql);
+    return writeDB($mysqli, $sql);
 }
 
 
-function supprimerArticle($conn, $id_article) {
+function supprimerArticle($mysqli, $id_article) {
     $id_article = (int) $id_article;
 
     $sql = "DELETE FROM article WHERE id_article = $id_article";
 
-    return writeDB($conn, $sql);
+    return writeDB($mysqli, $sql);
 }
 
 
 
-function estAuteur($conn, $id_article, $id_utilisateur) {
+function estAuteur($mysqli, $id_article, $id_utilisateur) {
     $id_article     = (int) $id_article;
     $id_utilisateur = (int) $id_utilisateur;
 
@@ -219,7 +219,7 @@ function estAuteur($conn, $id_article, $id_utilisateur) {
             WHERE id_article     = $id_article
               AND id_utilisateur = $id_utilisateur";
 
-    $result = readDB($conn, $sql);
+    $result = readDB($mysqli, $sql);
 
     return !empty($result);
 }
@@ -258,6 +258,21 @@ function login($mysqli, $login, $password)
     
     return null;
 } 
+
+ function getUserInfo($mysqli, $id_utilisateur) {
+    $id_utilisateur = (int) $id_utilisateur;
+
+    $sql = "SELECT utilisateurs.id_utilisateur, utilisateurs.login, utilisateurs.nom, utilisateurs.prenom, utilisateurs.email, utilisateurs.adresse, utilisateurs.dateNaissance, utilisateurs.dateCreation, utilisateurs.derniereConnexion, utilisateurs.id_role, role.nomRole
+            FROM utilisateurs
+            LEFT JOIN role ON utilisateurs.id_role = role.id_role
+            WHERE utilisateurs.id_utilisateur = $id_utilisateur
+            LIMIT 1";
+
+    $result = readDB($mysqli, $sql);
+
+    return $result[0] ?? null;
+
+ }
 ?>
 
 
