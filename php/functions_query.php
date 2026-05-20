@@ -244,4 +244,41 @@ function estAuteur($conn, $id_article, $id_utilisateur) {
 
     return !empty($result);
 }
+
+
+function login($mysqli, $login, $password)
+{
+    $login = mysqli_real_escape_string($mysqli, $login);
+    
+    // Récupérer l'utilisateur par son login
+    $sql = "SELECT id_utilisateur, login, nom, prenom, email, mdp, id_role
+            FROM utilisateurs
+            WHERE login = '" . $login . "'
+            LIMIT 1";
+
+    $result = readDB($mysqli, $sql);
+    
+    // Si aucun utilisateur trouvé, retourner null
+    if (empty($result)) {
+        return null;
+    }
+    
+    $utilisateur = $result[0];
+    
+    // Vérifier le mot de passe
+    // Si les mots de passe sont hashés avec password_hash() :
+    if (password_verify($password, $utilisateur['mdp'])) {
+        return $utilisateur;
+    }
+    
+    // Sinon, comparaison directe (déprécié, à utiliser que temporairement)
+    // À supprimer une fois les mots de passe correctement hashés
+    if ($password === $utilisateur['mdp']) {
+        return $utilisateur;
+    }
+    
+    return null;
+} 
 ?>
+
+
