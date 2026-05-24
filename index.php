@@ -17,8 +17,6 @@ $genre  = isset($_GET['genre']) ? (int) $_GET['genre'] : 0;
 
 $conn = connectionDB();
 
-// --- Récupération des articles ---
-// Si une recherche est active, on filtre — sinon on prend tout
 if ($search !== '' || $genre > 0) {
     $articles   = getArticlesByRecherche($conn, $search, $genre, $page, $limite);
     $nbArticles = getNbArticlesByRecherche($conn, $search, $genre);

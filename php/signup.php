@@ -5,13 +5,11 @@ ini_set('display_errors', 1);
 
 session_start();
 
-// Chemin vers les includes (remonter d'un niveau depuis php/)
 require_once("../includes/constantes.php");
 require_once("../includes/functions-DB.php");
 require_once("functions_query.php");
 require_once("functions_structure.php");
 
-// Initialiser les variables
 $error = '';
 $success = false;
 
@@ -25,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $password_confirm = $_POST['password_confirm'] ?? '';
 
-    // Validations
     if (empty($lastname)) {
         $error = 'Le nom est requis.';
     } elseif (empty($firstname)) {
@@ -47,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $password_confirm) {
         $error = 'Les mots de passe ne correspondent pas.';
     } else {
-        // Ajouter le nouvel utilisateur à la base de données
         $mysqli = connectionDB();
         $insert_result = addProfile($mysqli, $username, $lastname, $firstname, $address, $email, $birthdate, $password);
         closeDB($mysqli);
@@ -62,13 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = 'Méthode de requête non valide.';
 }
 
-// Redirection ou retour avec message
 if ($success) {
-    // Redirection vers la page de connexion avec message de succès
+
     header('Location: ../inscription.php?success=1');
     exit();
 } else {
-    // Retour à la page d'inscription avec les erreurs et données
+
     $_SESSION['inscription_error'] = $error;
     $_SESSION['inscription_data'] = [
         'lastname' => $lastname ?? '',

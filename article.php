@@ -17,7 +17,7 @@ if ($id <= 0) {
     exit;
 }
 
-// Traitement du formulaire d'avis
+
 $erreurAvis = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id_utilisateur'])) {
     $titre_avis = trim($_POST['titre_avis'] ?? '');
@@ -76,7 +76,6 @@ closeDB($conn);
 
     <main>
 
-        <!-- En-tête de l'article : affiche + infos film -->
         <section class="film-header">
             <div class="container">
                 <div class="film-header-content">
@@ -160,7 +159,7 @@ closeDB($conn);
         </section>
 
 
-        <!-- Contenu de l'article -->
+
         <section class="film-synopsis">
             <div class="container">
                 <h2><?php echo htmlspecialchars($article['titreArticle']); ?></h2>
@@ -173,7 +172,7 @@ closeDB($conn);
         </section>
 
 
-        <!-- Synopsis du film -->
+
         <section class="film-synopsis">
             <div class="container">
                 <h2>Synopsis</h2>
@@ -182,12 +181,11 @@ closeDB($conn);
         </section>
 
 
-        <!-- Avis des utilisateurs -->
         <section class="film-reviews">
             <div class="container">
                 <h2>Avis des utilisateurs</h2>
 
-                <!-- Liste des avis -->
+
                 <div class="reviews-list">
                     <h3><?php echo $stats['nbAvis']; ?> avis</h3>
 
@@ -225,7 +223,7 @@ closeDB($conn);
                     <?php endif; ?>
                 </div>
 
-                <!-- Formulaire pour ajouter un avis -->
+
                 <?php if (isset($_SESSION['id_utilisateur'])): ?>
                     <div class="add-review-card">
                         <h3>Laisser un avis</h3>

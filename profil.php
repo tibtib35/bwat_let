@@ -10,7 +10,7 @@ require_once("php/functions_structure.php");
 
 session_start();
 
-// Vérifier si l'utilisateur est connecté
+
 if (!isset($_SESSION['id_utilisateur'])) {
     header('Location: connection.php');
     exit();
@@ -20,18 +20,16 @@ $user_id = $_SESSION['id_utilisateur'];
 $error = '';
 $success = '';
 
-// Récupérer les informations de l'utilisateur depuis la base de données
 $mysqli = connectionDB();
 $user = getUserInfo($mysqli, $user_id);
 closeDB($mysqli);
 
-// Rediriger si l'utilisateur n'existe pas
+
 if (!$user) {
     header('Location: index.php');
     exit();
 }
 
-// Traiter les modifications du profil
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $new_email = trim($_POST['email'] ?? '');
     $new_adresse = trim($_POST['adresse'] ?? '');
@@ -49,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     } elseif (empty($new_prenom)) {
         $error = 'Le prénom est requis.';
     } else {
-        // Mettre à jour la base de données
         $mysqli = connectionDB();
         $update_result = updateUserInfo($mysqli, $user_id, $new_nom, $new_prenom, $new_email, $new_adresse);
         closeDB($mysqli);
@@ -66,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     }
 }
 
-// Traiter le changement de mot de passe
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     $old_password = $_POST['old_password'] ?? '';
     $new_password = $_POST['new_password'] ?? '';

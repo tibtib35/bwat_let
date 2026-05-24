@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le : mer. 20 mai 2026 à 07:39
+-- Généré le : dim. 24 mai 2026 à 13:22
 -- Version du serveur : 5.7.24
 -- Version de PHP : 8.3.1
 
@@ -125,7 +125,8 @@ INSERT INTO `avis` (`id_avis`, `titre`, `texte`, `note`, `dateCreation`, `visibl
 (16, 'Glaçant de bout en bout', 'Hopkins et Foster forment un duo inoubliable. Un thriller psychologique d\'exception qui ne vieillit pas.', 4, '2025-03-21 10:00:00', 1, 7, 5),
 (17, 'Pas pour les âmes sensibles', 'Brillant mais vraiment angoissant. À ne pas regarder seul la nuit. Une maîtrise absolue du suspense.', 2, '2025-03-22 16:00:00', 1, 7, 6),
 (18, 'Révolutionnaire', 'Tarantino a changé le cinéma à jamais avec ce film. Chaque scène est culte, chaque dialogue est ciselé.', 3, '2025-04-02 11:00:00', 1, 8, 4),
-(19, 'Un film culte pleinement justifié', 'Les dialogues sont d\'une richesse incroyable. Une expérience unique que tout cinéphile se doit de vivre.', 3, '2025-04-03 14:00:00', 1, 8, 5);
+(19, 'Un film culte pleinement justifié', 'Les dialogues sont d\'une richesse incroyable. Une expérience unique que tout cinéphile se doit de vivre.', 3, '2025-04-03 14:00:00', 1, 8, 5),
+(20, 'trop bien', 'tres constructif', 5, '2026-05-20 13:40:50', 1, 7, 7);
 
 -- --------------------------------------------------------
 
@@ -390,12 +391,13 @@ CREATE TABLE `utilisateurs` (
 --
 
 INSERT INTO `utilisateurs` (`id_utilisateur`, `nom`, `prenom`, `login`, `mdp`, `email`, `adresse`, `dateNaissance`, `dateCreation`, `derniereConnexion`, `id_role`) VALUES
-(1, 'Dupont', 'Alice', 'alice_d', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'alice.dupont@email.com', '12 rue des Lilas, Paris', '1995-03-15', '2025-01-10 09:00:00', '2025-05-01 14:22:00', 1),
-(2, 'Martin', 'Bob', 'bob_m', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'bob.martin@email.com', '5 avenue Victor Hugo, Lyon', '1990-07-22', '2025-01-15 11:30:00', '2025-05-02 10:15:00', 2),
+(1, 'Dupont', 'Alice', 'alice_d', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'alice.dupont@email.com', '12 rue des Lilas, Paris', '1995-03-15', '2025-01-10 09:00:00', '2025-05-01 14:22:00', 2),
+(2, 'quinson', 'Bob', 'bob_m', 'azertyui', 'bob.martin@email.com', '7 avenue Victor Hugo, Lyon', '1990-07-22', '2025-01-15 11:30:00', '2025-05-02 10:15:00', 2),
 (3, 'Leroy', 'Clara', 'clara_l', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'clara.leroy@email.com', '8 boulevard Gambetta, Bordeaux', '1998-11-05', '2025-02-01 08:45:00', '2025-05-03 16:40:00', 2),
 (4, 'Bernard', 'David', 'david_b', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'david.bernard@email.com', '22 rue de la Paix, Marseille', '1985-04-18', '2025-02-10 14:00:00', '2025-04-30 09:00:00', 1),
 (5, 'Petit', 'Emma', 'emma_p', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'emma.petit@email.com', '3 place du Capitole, Toulouse', '2000-09-12', '2025-03-05 17:20:00', '2025-05-04 11:30:00', 1),
-(6, 'Moreau', 'Félix', 'felix_m', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'felix.moreau@email.com', '15 rue Saint-Denis, Nantes', '1993-06-30', '2025-03-20 10:10:00', '2025-05-01 08:55:00', 1);
+(6, 'Moreau', 'Félix', 'felix_m', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'felix.moreau@email.com', '15 rue Saint-Denis, Nantes', '1993-06-30', '2025-03-20 10:10:00', '2025-05-01 08:55:00', 1),
+(7, 'Huet', 'Thibault', 'thihuet', 'undeuxtrois', 'thibault.huet.bzh@gmail.com', '25 Rue des genets, Talensac', '2026-05-14', '2026-05-20 09:11:45', '2026-05-20 09:11:45', 3);
 
 --
 -- Index pour les tables déchargées
@@ -512,7 +514,7 @@ ALTER TABLE `article`
 -- AUTO_INCREMENT pour la table `avis`
 --
 ALTER TABLE `avis`
-  MODIFY `id_avis` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_avis` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT pour la table `film`
@@ -548,13 +550,13 @@ ALTER TABLE `realisateurs`
 -- AUTO_INCREMENT pour la table `role`
 --
 ALTER TABLE `role`
-  MODIFY `id_role` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_role` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `utilisateurs`
 --
 ALTER TABLE `utilisateurs`
-  MODIFY `id_utilisateur` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_utilisateur` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Contraintes pour les tables déchargées
