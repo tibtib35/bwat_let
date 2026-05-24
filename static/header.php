@@ -7,15 +7,18 @@
         </div>
         <nav class="nav">
             <ul>
-
+                <?php 
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                
+                if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['id_role']) && $_SESSION['id_role'] >= 2): ?>
+                    <li><a href="creer_article.php">Rédiger un article</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
         <div class="nav-buttons">
             <?php 
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-            
             if (isset($_SESSION['id_utilisateur'])): ?>
                 <span class="user-welcome">
                     Bienvenue, <strong><?php echo htmlspecialchars($_SESSION['prenom'] ?? 'Utilisateur'); ?></strong>
