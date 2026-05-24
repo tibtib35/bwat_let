@@ -72,13 +72,7 @@ function getNbArticlesByRecherche($mysqli, $search, $genre) {
     return $result[0]['total']; 
 }
 
-// ============================================================
-// V3 — Fonctions pour la page détail d'un article
-// ============================================================
 
-// Retourne un article complet avec les infos du film, du genre et de l'auteur
-// Retourne null si l'article n'existe pas
-// $id : id_article récupéré depuis l'URL
 function getArticle($mysqli, $id) {
     $id = (int) $id;
 
@@ -92,8 +86,7 @@ function getArticle($mysqli, $id) {
 
     $result = readDB($mysqli, $sql);
 
-    // readDB retourne un tableau : on veut juste le premier (et unique) résultat
-    // Si le tableau est vide, l'article n'existe pas → on retourne null
+
     return $result[0] ?? null;
 }
 
@@ -297,7 +290,6 @@ function login($mysqli, $login, $password)
 {
     $login = mysqli_real_escape_string($mysqli, $login);
     
-    // Récupérer l'utilisateur par son login
     $sql = "SELECT id_utilisateur, login, nom, prenom, email, mdp, id_role
             FROM utilisateurs
             WHERE login = '" . $login . "'
@@ -305,21 +297,16 @@ function login($mysqli, $login, $password)
 
     $result = readDB($mysqli, $sql);
     
-    // Si aucun utilisateur trouvé, retourner null
     if (empty($result)) {
         return null;
     }
     
     $utilisateur = $result[0];
     
-    // Vérifier le mot de passe
-    // Si les mots de passe sont hashés avec password_hash() :
     if (password_verify($password, $utilisateur['mdp'])) {
         return $utilisateur;
     }
     
-    // Sinon, comparaison directe (déprécié, à utiliser que temporairement)
-    // À supprimer une fois les mots de passe correctement hashés
     if ($password === $utilisateur['mdp']) {
         return $utilisateur;
     }

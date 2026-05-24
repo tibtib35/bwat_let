@@ -1,8 +1,5 @@
 <?php
 
-// Génère et affiche le HTML d'une carte article
-// $article : tableau associatif retourné par getArticles() ou getArticlesByRecherche()
-//            contient : id_article, titreArticle, contenu, dateCreation, titreFilm, affiche, nomGenre, auteur
 function afficherCarteArticle($article) {
     $dateFormatee = date('d M Y', strtotime($article['dateCreation']));
     $extrait      = substr($article['contenu'], 0, 150) . '...';
@@ -39,10 +36,6 @@ function afficherCarteArticle($article) {
 }
 
 
-// Génère et affiche le HTML de la pagination
-// $page    : numéro de page courante
-// $nbPages : nombre total de pages
-// $params  : paramètres GET à conserver dans les liens (recherche, genre...)
 function afficherPagination($page, $nbPages, $params = []) {
     if ($nbPages <= 1) return;
 

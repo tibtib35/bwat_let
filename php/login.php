@@ -7,7 +7,7 @@ session_start();
 
 $error = '';
 
-// Traiter uniquement les POST
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = trim($_POST['login'] ?? '');
     $mdp = $_POST['mdp'] ?? '';
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 } else {
-    // Si ce n'est pas un POST, rediriger vers connection.php
+
     header('Location: ../connection.php');
     exit();
 }
