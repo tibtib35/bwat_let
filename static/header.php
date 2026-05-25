@@ -14,6 +14,7 @@
                 
                 if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['id_role']) && $_SESSION['id_role'] >= 2): ?>
                     <li><a href="creer_article.php">Rédiger un article</a></li>
+                    <li><a href="mes_articles.php">Mes articles</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
