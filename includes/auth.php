@@ -17,6 +17,6 @@ function exigerRole($roleMin) {
 
 
 function estAdmin() {
-    return isset($_SESSION['id_role']) && $_SESSION['id_role'] === 3;
+    return isset($_SESSION['id_role']) && (int)$_SESSION['id_role'] === 3;
 }
 ?>

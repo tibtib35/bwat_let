@@ -358,6 +358,100 @@ function updateUserPassword($mysqli, $id_utilisateur, $new_password) {
     return writeDB($mysqli, $sql);
 }
 
+function aDejaUnAvis($mysqli, $id_article, $id_utilisateur) {
+    $id_article     = (int) $id_article;
+    $id_utilisateur = (int) $id_utilisateur;
+
+    $sql = "SELECT id_avis FROM avis
+            WHERE id_article = $id_article
+              AND id_utilisateur = $id_utilisateur
+            LIMIT 1";
+
+    $result = readDB($mysqli, $sql);
+    return !empty($result);
+}
+
+
+function getAvisByUser($mysqli, $id_utilisateur) {
+    $id_utilisateur = (int) $id_utilisateur;
+
+    $sql = "SELECT avis.id_avis, avis.titre, avis.note, avis.dateCreation,
+                   article.id_article, article.titre AS titreArticle,
+                   film.titre AS titreFilm
+            FROM avis
+                INNER JOIN article ON avis.id_article = article.id_article
+                INNER JOIN film ON article.id_film = film.id_film
+            WHERE avis.id_utilisateur = $id_utilisateur
+            ORDER BY avis.dateCreation DESC";
+
+    return readDB($mysqli, $sql);
+}
+
+
+function getArticlesByUser($mysqli, $id_utilisateur) {
+    $id_utilisateur = (int) $id_utilisateur;
+
+    $sql = "SELECT article.id_article, article.titre AS titreArticle, article.dateCreation,
+                   film.titre AS titreFilm
+            FROM article
+                INNER JOIN film ON article.id_film = film.id_film
+            WHERE article.id_utilisateur = $id_utilisateur
+            ORDER BY article.dateCreation DESC";
+
+    return readDB($mysqli, $sql);
+}
+
+
+function getAllUsers($mysqli) {
+    $sql = "SELECT utilisateurs.id_utilisateur, utilisateurs.login, utilisateurs.nom, utilisateurs.prenom,
+                   utilisateurs.email, utilisateurs.dateCreation, utilisateurs.id_role, role.nomRole
+            FROM utilisateurs
+                INNER JOIN role ON utilisateurs.id_role = role.id_role
+            ORDER BY utilisateurs.dateCreation DESC";
+
+    return readDB($mysqli, $sql);
+}
+
+
+function getAllArticles($mysqli) {
+    $sql = "SELECT article.id_article, article.titre AS titreArticle, article.dateCreation,
+                   film.titre AS titreFilm, utilisateurs.login AS auteur
+            FROM article
+                INNER JOIN film ON article.id_film = film.id_film
+                INNER JOIN utilisateurs ON article.id_utilisateur = utilisateurs.id_utilisateur
+            ORDER BY article.dateCreation DESC";
+
+    return readDB($mysqli, $sql);
+}
+
+
+function getAllAvis($mysqli) {
+    $sql = "SELECT avis.id_avis, avis.titre, avis.note, avis.dateCreation,
+                   utilisateurs.login AS auteur, article.id_article, article.titre AS titreArticle
+            FROM avis
+                INNER JOIN utilisateurs ON avis.id_utilisateur = utilisateurs.id_utilisateur
+                INNER JOIN article ON avis.id_article = article.id_article
+            ORDER BY avis.dateCreation DESC";
+
+    return readDB($mysqli, $sql);
+}
+
+
+function getRoles($mysqli) {
+    $sql = "SELECT id_role, nomRole FROM role ORDER BY id_role ASC";
+    return readDB($mysqli, $sql);
+}
+
+
+function changerRole($mysqli, $id_utilisateur, $id_role) {
+    $id_utilisateur = (int) $id_utilisateur;
+    $id_role        = (int) $id_role;
+
+    $sql = "UPDATE utilisateurs SET id_role = $id_role WHERE id_utilisateur = $id_utilisateur";
+    return writeDB($mysqli, $sql);
+}
+
+
 function addProfile($mysqli, $login, $nom, $prenom, $address, $email, $dateNaissance, $mdp) {
     $login          = mysqli_real_escape_string($mysqli, $login);
     $nom            = mysqli_real_escape_string($mysqli, $nom);

@@ -58,6 +58,11 @@ $stats        = getMoyenneAvis($conn, $id);
 $realisateurs = getRealisateursByFilm($conn, $article['id_film']);
 $acteurs      = getActeursByFilm($conn, $article['id_film']);
 
+$dejaUnAvis = false;
+if (isset($_SESSION['id_utilisateur'])) {
+    $dejaUnAvis = aDejaUnAvis($conn, $id, $_SESSION['id_utilisateur']);
+}
+
 closeDB($conn);
 ?>
 <!DOCTYPE html>
@@ -223,8 +228,8 @@ closeDB($conn);
                     <?php endif; ?>
                 </div>
 
-
-                <?php if (isset($_SESSION['id_utilisateur'])): ?>
+                <!-- Formulaire pour ajouter un avis -->
+                <?php if (isset($_SESSION['id_utilisateur']) && !$dejaUnAvis): ?>
                     <div class="add-review-card">
                         <h3>Laisser un avis</h3>
 
@@ -264,9 +269,11 @@ closeDB($conn);
 
                         </form>
                     </div>
+                <?php elseif (isset($_SESSION['id_utilisateur']) && $dejaUnAvis): ?>
+                    <p class="alert alert-success" style="margin-top: 2rem;">Vous avez déjà posté un avis sur cet article.</p>
                 <?php else: ?>
-                    <p style="margin-top: 2rem; color: var(--light-text);">
-                        <a href="connection.php" style="color: var(--accent-color);">Connectez-vous</a> pour laisser un avis.
+                    <p style="margin-top: 2rem; color: var(--text);">
+                        <a href="connection.php" style="color: var(--accent);">Connectez-vous</a> pour laisser un avis.
                     </p>
                 <?php endif; ?>
 

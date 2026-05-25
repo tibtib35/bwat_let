@@ -26,6 +26,9 @@
                 <a href="profil.php" class="btn-profile">
                     <i class="fas fa-user-circle"></i> Mon profil
                 </a>
+                <?php if ((int)($_SESSION['id_role'] ?? 0) === 3): ?>
+                    <a href="admin.php" class="btn-admin">Admin</a>
+                <?php endif; ?>
                 <a href="php/logout.php" class="btn-logout">Se déconnecter</a>
             <?php else: ?>
                 <a href="connection.php" class="btn-login">Se connecter</a>

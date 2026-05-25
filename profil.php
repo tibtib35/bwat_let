@@ -63,6 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     }
 }
 
+$mysqli = connectionDB();
+$mes_avis     = getAvisByUser($mysqli, $user_id);
+$mes_articles = getArticlesByUser($mysqli, $user_id);
+closeDB($mysqli);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     $old_password = $_POST['old_password'] ?? '';
     $new_password = $_POST['new_password'] ?? '';
@@ -278,6 +283,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
             </div>
         </section>
     </main>
+
+    <!-- Mes avis -->
+    <section class="profile-section" style="padding-top: 0;">
+        <div class="container">
+            <div class="profile-card" style="max-width: 860px;">
+                <h2>Mes avis (<?php echo count($mes_avis); ?>)</h2>
+
+                <?php if (empty($mes_avis)): ?>
+                    <p>Vous n'avez pas encore posté d'avis.</p>
+                <?php else: ?>
+                    <ul class="profile-list">
+                        <?php foreach ($mes_avis as $a): ?>
+                            <li class="profile-list-item">
+                                <div>
+                                    <div class="profile-list-title">
+                                        <?php echo htmlspecialchars($a['titre']); ?>
+                                        — <span style="color: var(--accent);"><?php echo $a['note']; ?>/5</span>
+                                    </div>
+                                    <div class="profile-list-meta">
+                                        <?php echo htmlspecialchars($a['titreFilm']); ?>
+                                        &bull; <?php echo date('d/m/Y', strtotime($a['dateCreation'])); ?>
+                                    </div>
+                                </div>
+                                <div class="profile-list-actions">
+                                    <a href="article.php?id=<?php echo $a['id_article']; ?>" class="btn-edit">Voir</a>
+                                    <a href="modifier_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-edit">Modifier</a>
+                                    <a href="supprimer_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-danger-small">Supprimer</a>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+
+            <?php if ((int)($_SESSION['id_role'] ?? 0) >= 2): ?>
+            <div class="profile-card" style="max-width: 860px; margin-top: 1.5rem;">
+                <h2>Mes articles (<?php echo count($mes_articles); ?>)</h2>
+
+                <?php if (empty($mes_articles)): ?>
+                    <p>Vous n'avez pas encore rédigé d'article.</p>
+                <?php else: ?>
+                    <ul class="profile-list">
+                        <?php foreach ($mes_articles as $art): ?>
+                            <li class="profile-list-item">
+                                <div>
+                                    <div class="profile-list-title">
+                                        <?php echo htmlspecialchars($art['titreArticle']); ?>
+                                    </div>
+                                    <div class="profile-list-meta">
+                                        <?php echo htmlspecialchars($art['titreFilm']); ?>
+                                        &bull; <?php echo date('d/m/Y', strtotime($art['dateCreation'])); ?>
+                                    </div>
+                                </div>
+                                <div class="profile-list-actions">
+                                    <a href="article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Voir</a>
+                                    <a href="modifier_article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Modifier</a>
+                                    <a href="supprimer_article.php?id=<?php echo $art['id_article']; ?>" class="btn-danger-small">Supprimer</a>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </section>
 
     <?php include("static/footer.php"); ?>
 
