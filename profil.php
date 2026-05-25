@@ -10,7 +10,6 @@ require_once("php/functions_structure.php");
 
 session_start();
 
-
 if (!isset($_SESSION['id_utilisateur'])) {
     header('Location: connection.php');
     exit();
@@ -23,7 +22,6 @@ $success = '';
 $mysqli = connectionDB();
 $user = getUserInfo($mysqli, $user_id);
 closeDB($mysqli);
-
 
 if (!$user) {
     header('Location: index.php');
@@ -50,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         $mysqli = connectionDB();
         $update_result = updateUserInfo($mysqli, $user_id, $new_nom, $new_prenom, $new_email, $new_adresse);
         closeDB($mysqli);
-        
+
         if ($update_result) {
-            $success = 'Profil mis à jour avec succès !';
+            $success = 'Profil mis à jour avec succès.';
             $user['nom'] = $new_nom;
             $user['prenom'] = $new_prenom;
             $user['email'] = $new_email;
@@ -62,11 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         }
     }
 }
-
-$mysqli = connectionDB();
-$mes_avis     = getAvisByUser($mysqli, $user_id);
-$mes_articles = getArticlesByUser($mysqli, $user_id);
-closeDB($mysqli);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     $old_password = $_POST['old_password'] ?? '';
@@ -81,39 +74,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
         $error = 'Le nouveau mot de passe doit contenir au moins 8 caractères.';
     } elseif ($new_password !== $confirm_password) {
         $error = 'Les mots de passe ne correspondent pas.';
+    } elseif ($old_password !== $user['mdp']) {
+        $error = 'L\'ancien mot de passe est incorrect.';
+    } elseif ($new_password === $user['mdp']) {
+        $error = 'Le nouveau mot de passe doit être différent de l\'ancien.';
     } else {
-        // Vérifier que l'ancien mot de passe est correct
-        if ($old_password === $user['mdp']) {
-            // Vérifier que le nouveau mot de passe est différent de l'ancien
-            if ($new_password === $user['mdp']) {
-                $error = 'Le nouveau mot de passe doit être différent de l\'ancien.';
-            } else {
-                // Mettre à jour le mot de passe
-                $mysqli = connectionDB();
-                $update_result = updateUserPassword($mysqli, $user_id, $new_password);
-                closeDB($mysqli);
-                
-                if ($update_result) {
-                    $success = 'Mot de passe changé avec succès !';
-                    // Récupérer les infos actualisées
-                    $mysqli = connectionDB();
-                    $user = getUserInfo($mysqli, $user_id);
-                    closeDB($mysqli);
-                } else {
-                    $error = 'Erreur lors de la mise à jour du mot de passe.';
-                }
-            }
+        $mysqli = connectionDB();
+        $update_result = updateUserPassword($mysqli, $user_id, $new_password);
+        closeDB($mysqli);
+
+        if ($update_result) {
+            $success = 'Mot de passe changé avec succès.';
+            $mysqli = connectionDB();
+            $user = getUserInfo($mysqli, $user_id);
+            closeDB($mysqli);
         } else {
-            $error = 'L\'ancien mot de passe est incorrect.';
+            $error = 'Erreur lors de la mise à jour du mot de passe.';
         }
     }
 }
 
+$mysqli = connectionDB();
+$mes_avis = getAvisByUser($mysqli, $user_id);
+$mes_articles = getArticlesByUser($mysqli, $user_id);
+closeDB($mysqli);
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,13 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-
 <body>
     <?php include("static/header.php"); ?>
 
     <main>
         <section class="profile-section">
             <div class="container">
+
                 <div class="profile-header">
                     <div class="profile-avatar">
                         <i class="fas fa-user-circle"></i>
@@ -142,233 +129,176 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
                 </div>
 
                 <div class="profile-content">
-                    <!-- Barre d'onglets -->
-                    <div class="profile-tabs">
-                        <button class="tab-button active" onclick="switchTab('profile')">
-                            <i class="fas fa-user"></i> Informations personnelles
-                        </button>
-                        <button class="tab-button" onclick="switchTab('password')">
-                            <i class="fas fa-lock"></i> Mot de passe
-                        </button>
-                    </div>
 
-                    <!-- Onglet Informations personnelles -->
-                    <div id="profile" class="tab-content active">
-                        <div class="profile-card">
-                            <h2>Informations personnelles</h2>
+                    <div class="profile-card">
+                        <h2>Informations personnelles</h2>
 
-                            <?php if (!empty($error)): ?>
-                                <div class="alert alert-error">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    <?php echo htmlspecialchars($error); ?>
-                                </div>
-                            <?php endif; ?>
+                        <?php if (!empty($error) && isset($_POST['update_profile'])): ?>
+                            <p class="alert alert-error"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($success) && isset($_POST['update_profile'])): ?>
+                            <p class="alert alert-success"><?php echo htmlspecialchars($success); ?></p>
+                        <?php endif; ?>
 
-                            <?php if (!empty($success)): ?>
-                                <div class="alert alert-success">
-                                    <i class="fas fa-check-circle"></i>
-                                    <?php echo htmlspecialchars($success); ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <form method="POST" class="profile-form">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="nom">Nom</label>
-                                        <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($user['nom']); ?>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="prenom">Prénom</label>
-                                        <input type="text" id="prenom" name="prenom" value="<?php echo htmlspecialchars($user['prenom']); ?>" required>
-                                    </div>
-                                </div>
-
+                        <form method="POST" class="profile-form">
+                            <div class="form-row">
                                 <div class="form-group">
-                                    <label for="login">Nom d'utilisateur</label>
-                                    <input type="text" id="login" name="login" value="<?php echo htmlspecialchars($user['login']); ?>" disabled>
+                                    <label for="nom">Nom</label>
+                                    <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($user['nom']); ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prenom">Prénom</label>
+                                    <input type="text" id="prenom" name="prenom" value="<?php echo htmlspecialchars($user['prenom']); ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="login">Nom d'utilisateur</label>
+                                <input type="text" id="login" value="<?php echo htmlspecialchars($user['login']); ?>" disabled>
+                                <small>Ne peut pas être modifié</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Adresse email</label>
+                                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="adresse">Adresse</label>
+                                <input type="text" id="adresse" name="adresse" value="<?php echo htmlspecialchars($user['adresse']); ?>" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date de naissance</label>
+                                    <input type="date" value="<?php echo htmlspecialchars($user['dateNaissance']); ?>" disabled>
+                                    <small>Ne peut pas être modifiée</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rôle</label>
+                                    <input type="text" value="<?php echo htmlspecialchars($user['nomRole']); ?>" disabled>
                                     <small>Ne peut pas être modifié</small>
                                 </div>
+                            </div>
 
+                            <div class="form-row">
                                 <div class="form-group">
-                                    <label for="email">Adresse email</label>
-                                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    <label>Membre depuis</label>
+                                    <input type="text" value="<?php echo date('d/m/Y', strtotime($user['dateCreation'])); ?>" disabled>
                                 </div>
-
                                 <div class="form-group">
-                                    <label for="adresse">Adresse</label>
-                                    <input type="text" id="adresse" name="adresse" value="<?php echo htmlspecialchars($user['adresse']); ?>" required>
+                                    <label>Dernière connexion</label>
+                                    <input type="text" value="<?php echo date('d/m/Y à H:i', strtotime($user['derniereConnexion'])); ?>" disabled>
                                 </div>
+                            </div>
 
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="dateNaissance">Date de naissance</label>
-                                        <input type="date" id="dateNaissance" name="dateNaissance" value="<?php echo htmlspecialchars($user['dateNaissance']); ?>" disabled>
-                                        <small>Ne peut pas être modifiée</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="role">Rôle</label>
-                                        <input type="text" id="role" name="role" value="<?php echo htmlspecialchars($user['nomRole']); ?>" disabled>
-                                        <small>Ne peut pas être modifié</small>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="dateCreation">Membre depuis</label>
-                                        <input type="text" id="dateCreation" name="dateCreation" value="<?php echo date('d/m/Y', strtotime($user['dateCreation'])); ?>" disabled>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="derniereConnexion">Dernière connexion</label>
-                                        <input type="text" id="derniereConnexion" name="derniereConnexion" value="<?php echo date('d/m/Y à H:i', strtotime($user['derniereConnexion'])); ?>" disabled>
-                                    </div>
-                                </div>
-
-                                <button type="submit" name="update_profile" class="btn-primary">
-                                    <i class="fas fa-save"></i> Sauvegarder les modifications
-                                </button>
-                            </form>
-                        </div>
+                            <button type="submit" name="update_profile" class="btn-primary">Sauvegarder</button>
+                        </form>
                     </div>
 
-                    <!-- Onglet Mot de passe -->
-                    <div id="password" class="tab-content">
-                        <div class="profile-card">
-                            <h2>Changer le mot de passe</h2>
+                    <div class="profile-card" style="margin-top: 1.5rem;">
+                        <h2>Changer le mot de passe</h2>
 
-                            <?php if (!empty($error) && isset($_POST['update_password'])): ?>
-                                <div class="alert alert-error">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    <?php echo htmlspecialchars($error); ?>
-                                </div>
-                            <?php endif; ?>
+                        <?php if (!empty($error) && isset($_POST['update_password'])): ?>
+                            <p class="alert alert-error"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($success) && isset($_POST['update_password'])): ?>
+                            <p class="alert alert-success"><?php echo htmlspecialchars($success); ?></p>
+                        <?php endif; ?>
 
-                            <?php if (!empty($success) && isset($_POST['update_password'])): ?>
-                                <div class="alert alert-success">
-                                    <i class="fas fa-check-circle"></i>
-                                    <?php echo htmlspecialchars($success); ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <form method="POST" class="profile-form">
-                                <div class="form-group">
-                                    <label for="old_password">Ancien mot de passe</label>
-                                    <input type="password" id="old_password" name="old_password" placeholder="Entrez votre ancien mot de passe" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="new_password">Nouveau mot de passe</label>
-                                    <input type="password" id="new_password" name="new_password" placeholder="Entrez votre nouveau mot de passe" required>
-                                    <small>Au moins 8 caractères</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="confirm_password">Confirmer le mot de passe</label>
-                                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez votre nouveau mot de passe" required>
-                                </div>
-
-                                <button type="submit" name="update_password" class="btn-primary">
-                                    <i class="fas fa-key"></i> Changer le mot de passe
-                                </button>
-                            </form>
-                        </div>
+                        <form method="POST" class="profile-form">
+                            <div class="form-group">
+                                <label for="old_password">Ancien mot de passe</label>
+                                <input type="password" id="old_password" name="old_password" placeholder="Entrez votre ancien mot de passe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new_password">Nouveau mot de passe</label>
+                                <input type="password" id="new_password" name="new_password" placeholder="Au moins 8 caractères" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm_password">Confirmer le mot de passe</label>
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmez votre nouveau mot de passe" required>
+                            </div>
+                            <button type="submit" name="update_password" class="btn-primary">Changer le mot de passe</button>
+                        </form>
                     </div>
 
-                    <!-- Lien de déconnexion -->
                     <div class="profile-actions">
                         <a href="php/logout.php" class="btn-secondary">
                             <i class="fas fa-sign-out-alt"></i> Se déconnecter
                         </a>
                     </div>
+
                 </div>
+            </div>
+        </section>
+
+        <section class="profile-section" style="padding-top: 0;">
+            <div class="container">
+
+                <div class="profile-card" style="max-width: 860px;">
+                    <h2>Mes avis (<?php echo count($mes_avis); ?>)</h2>
+
+                    <?php if (empty($mes_avis)): ?>
+                        <p>Vous n'avez pas encore posté d'avis.</p>
+                    <?php else: ?>
+                        <ul class="profile-list">
+                            <?php foreach ($mes_avis as $a): ?>
+                                <li class="profile-list-item">
+                                    <div>
+                                        <div class="profile-list-title">
+                                            <?php echo htmlspecialchars($a['titre']); ?>
+                                            — <span style="color: var(--accent);"><?php echo $a['note']; ?>/5</span>
+                                        </div>
+                                        <div class="profile-list-meta">
+                                            <?php echo htmlspecialchars($a['titreFilm']); ?>
+                                            &bull; <?php echo date('d/m/Y', strtotime($a['dateCreation'])); ?>
+                                        </div>
+                                    </div>
+                                    <div class="profile-list-actions">
+                                        <a href="article.php?id=<?php echo $a['id_article']; ?>" class="btn-edit">Voir</a>
+                                        <a href="modifier_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-edit">Modifier</a>
+                                        <a href="supprimer_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-danger-small">Supprimer</a>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+
+                <?php if ((int)($_SESSION['id_role'] ?? 0) >= 2): ?>
+                <div class="profile-card" style="max-width: 860px; margin-top: 1.5rem;">
+                    <h2>Mes articles (<?php echo count($mes_articles); ?>)</h2>
+
+                    <?php if (empty($mes_articles)): ?>
+                        <p>Vous n'avez pas encore rédigé d'article.</p>
+                    <?php else: ?>
+                        <ul class="profile-list">
+                            <?php foreach ($mes_articles as $art): ?>
+                                <li class="profile-list-item">
+                                    <div>
+                                        <div class="profile-list-title"><?php echo htmlspecialchars($art['titreArticle']); ?></div>
+                                        <div class="profile-list-meta">
+                                            <?php echo htmlspecialchars($art['titreFilm']); ?>
+                                            &bull; <?php echo date('d/m/Y', strtotime($art['dateCreation'])); ?>
+                                        </div>
+                                    </div>
+                                    <div class="profile-list-actions">
+                                        <a href="article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Voir</a>
+                                        <a href="modifier_article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Modifier</a>
+                                        <a href="supprimer_article.php?id=<?php echo $art['id_article']; ?>" class="btn-danger-small">Supprimer</a>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
             </div>
         </section>
     </main>
 
-    <!-- Mes avis -->
-    <section class="profile-section" style="padding-top: 0;">
-        <div class="container">
-            <div class="profile-card" style="max-width: 860px;">
-                <h2>Mes avis (<?php echo count($mes_avis); ?>)</h2>
-
-                <?php if (empty($mes_avis)): ?>
-                    <p>Vous n'avez pas encore posté d'avis.</p>
-                <?php else: ?>
-                    <ul class="profile-list">
-                        <?php foreach ($mes_avis as $a): ?>
-                            <li class="profile-list-item">
-                                <div>
-                                    <div class="profile-list-title">
-                                        <?php echo htmlspecialchars($a['titre']); ?>
-                                        — <span style="color: var(--accent);"><?php echo $a['note']; ?>/5</span>
-                                    </div>
-                                    <div class="profile-list-meta">
-                                        <?php echo htmlspecialchars($a['titreFilm']); ?>
-                                        &bull; <?php echo date('d/m/Y', strtotime($a['dateCreation'])); ?>
-                                    </div>
-                                </div>
-                                <div class="profile-list-actions">
-                                    <a href="article.php?id=<?php echo $a['id_article']; ?>" class="btn-edit">Voir</a>
-                                    <a href="modifier_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-edit">Modifier</a>
-                                    <a href="supprimer_avis.php?id=<?php echo $a['id_avis']; ?>" class="btn-danger-small">Supprimer</a>
-                                </div>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-
-            <?php if ((int)($_SESSION['id_role'] ?? 0) >= 2): ?>
-            <div class="profile-card" style="max-width: 860px; margin-top: 1.5rem;">
-                <h2>Mes articles (<?php echo count($mes_articles); ?>)</h2>
-
-                <?php if (empty($mes_articles)): ?>
-                    <p>Vous n'avez pas encore rédigé d'article.</p>
-                <?php else: ?>
-                    <ul class="profile-list">
-                        <?php foreach ($mes_articles as $art): ?>
-                            <li class="profile-list-item">
-                                <div>
-                                    <div class="profile-list-title">
-                                        <?php echo htmlspecialchars($art['titreArticle']); ?>
-                                    </div>
-                                    <div class="profile-list-meta">
-                                        <?php echo htmlspecialchars($art['titreFilm']); ?>
-                                        &bull; <?php echo date('d/m/Y', strtotime($art['dateCreation'])); ?>
-                                    </div>
-                                </div>
-                                <div class="profile-list-actions">
-                                    <a href="article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Voir</a>
-                                    <a href="modifier_article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Modifier</a>
-                                    <a href="supprimer_article.php?id=<?php echo $art['id_article']; ?>" class="btn-danger-small">Supprimer</a>
-                                </div>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-            <?php endif; ?>
-        </div>
-    </section>
-
     <?php include("static/footer.php"); ?>
-
-    <script>
-        function switchTab(tabName) {
-            // Masquer tous les onglets
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-
-            // Désactiver tous les boutons
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-
-            // Afficher l'onglet sélectionné
-            document.getElementById(tabName).classList.add('active');
-
-            // Activer le bouton correspondant
-            event.target.classList.add('active');
-        }
-    </script>
 </body>
-
 </html>

@@ -174,28 +174,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label>Réalisateur(s)</label>
-                        <div id="realisateurs-list">
-                            <div class="person-row">
-                                <input type="text" name="real_prenom[]" placeholder="Prénom">
-                                <input type="text" name="real_nom[]" placeholder="Nom">
-                            </div>
+                        <div class="person-row">
+                            <input type="text" name="real_prenom[]" placeholder="Prénom">
+                            <input type="text" name="real_nom[]" placeholder="Nom">
                         </div>
-                        <button type="button" class="btn-add-person" onclick="ajouterLigne('realisateurs-list', 'real_prenom', 'real_nom')">
-                            + Ajouter un réalisateur
-                        </button>
+                        <div class="person-row">
+                            <input type="text" name="real_prenom[]" placeholder="Prénom">
+                            <input type="text" name="real_nom[]" placeholder="Nom">
+                        </div>
+                        <div class="person-row">
+                            <input type="text" name="real_prenom[]" placeholder="Prénom">
+                            <input type="text" name="real_nom[]" placeholder="Nom">
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label>Acteur(s)</label>
-                        <div id="acteurs-list">
-                            <div class="person-row">
-                                <input type="text" name="acteur_prenom[]" placeholder="Prénom">
-                                <input type="text" name="acteur_nom[]" placeholder="Nom">
-                            </div>
+                        <div class="person-row">
+                            <input type="text" name="acteur_prenom[]" placeholder="Prénom">
+                            <input type="text" name="acteur_nom[]" placeholder="Nom">
                         </div>
-                        <button type="button" class="btn-add-person" onclick="ajouterLigne('acteurs-list', 'acteur_prenom', 'acteur_nom')">
-                            + Ajouter un acteur
-                        </button>
+                        <div class="person-row">
+                            <input type="text" name="acteur_prenom[]" placeholder="Prénom">
+                            <input type="text" name="acteur_nom[]" placeholder="Nom">
+                        </div>
+                        <div class="person-row">
+                            <input type="text" name="acteur_prenom[]" placeholder="Prénom">
+                            <input type="text" name="acteur_nom[]" placeholder="Nom">
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -209,18 +215,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 
     <?php include("static/footer.php"); ?>
-
-    <script>
-        function ajouterLigne(containerId, champPrenom, champNom) {
-            const container = document.getElementById(containerId);
-            const row = document.createElement('div');
-            row.className = 'person-row';
-            row.innerHTML =
-                '<input type="text" name="' + champPrenom + '[]" placeholder="Prénom">' +
-                '<input type="text" name="' + champNom + '[]" placeholder="Nom">' +
-                '<button type="button" class="btn-remove-person" onclick="this.parentElement.remove()">✕</button>';
-            container.appendChild(row);
-        }
-    </script>
 </body>
 </html>
