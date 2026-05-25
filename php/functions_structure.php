@@ -10,29 +10,18 @@ function afficherCarteArticle($article) {
     $affiche      = htmlspecialchars($article['affiche']);
 
     echo "
-    <article class=\"article-card\">
-        <div class=\"article-image\">
-            <img src=\"{$affiche}\" alt=\"Affiche de {$titre}\">
+    <a href=\"article.php?id={$id}\" class=\"article-card\">
+        <img src=\"{$affiche}\" alt=\"Affiche de {$titre}\" class=\"article-card-img\">
+        <div class=\"article-card-overlay\">
             <span class=\"article-category\">{$genre}</span>
+            <h3 class=\"article-card-title\">{$titre}</h3>
+            <p class=\"article-card-meta\">
+                <i class=\"fas fa-user\"></i> {$auteur}
+                &nbsp;&bull;&nbsp;
+                <i class=\"fas fa-calendar\"></i> {$dateFormatee}
+            </p>
         </div>
-        <div class=\"article-content\">
-            <h3>{$titre}</h3>
-            <div class=\"article-meta\">
-                <span class=\"article-date\">
-                    <i class=\"fas fa-calendar\"></i>
-                    {$dateFormatee}
-                </span>
-                <span class=\"article-author\">
-                    <i class=\"fas fa-user\"></i>
-                    {$auteur}
-                </span>
-            </div>
-            <p class=\"article-excerpt\">{$extrait}</p>
-            <a href=\"article.php?id={$id}\" class=\"read-more\">
-                Lire l'article <i class=\"fas fa-arrow-right\"></i>
-            </a>
-        </div>
-    </article>";
+    </a>";
 }
 
 

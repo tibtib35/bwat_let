@@ -51,7 +51,14 @@ closeDB($conn);
                     <p class="alert alert-success"><?php echo htmlspecialchars($message); ?></p>
                 <?php endif; ?>
 
-                <!-- ===== UTILISATEURS ===== -->
+                <?php if (isset($_GET['film_cree'])): ?>
+                    <p class="alert alert-success">Film ajouté avec succès.</p>
+                <?php endif; ?>
+
+                <div style="margin-bottom: 2rem;">
+                    <a href="creer_film.php" class="btn-primary" style="display: inline-block; text-decoration: none;">+ Ajouter un film</a>
+                </div>
+
                 <h3>Utilisateurs (<?php echo count($users); ?>)</h3>
 
                 <table class="data-table">
@@ -92,7 +99,6 @@ closeDB($conn);
                     </tbody>
                 </table>
 
-                <!-- ===== ARTICLES ===== -->
                 <h3>Articles (<?php echo count($articles); ?>)</h3>
 
                 <table class="data-table">
@@ -122,7 +128,6 @@ closeDB($conn);
                     </tbody>
                 </table>
 
-                <!-- ===== AVIS ===== -->
                 <h3>Avis (<?php echo count($avis); ?>)</h3>
 
                 <table class="data-table">
@@ -149,7 +154,7 @@ closeDB($conn);
                                 <td><?php echo $av['note']; ?>/5</td>
                                 <td><?php echo date('d/m/Y', strtotime($av['dateCreation'])); ?></td>
                                 <td>
-                                    <a href="supprimer_avis.php?id=<?php echo $av['id_avis']; ?>" class="btn-danger-small">Supprimer</a>
+                                    <a href="supprimer_avis.php?id=<?php echo $av['id_avis']; ?>&from=admin" class="btn-danger-small">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -137,7 +137,6 @@ closeDB($conn);
                                 </span>
                             </div>
 
-                            <!-- Réalisateurs -->
                             <div class="meta-item">
                                 <span class="meta-label"><i class="fas fa-video"></i> Réalisateur(s)</span>
                                 <span class="meta-value">
@@ -147,7 +146,6 @@ closeDB($conn);
                                 </span>
                             </div>
 
-                            <!-- Acteurs -->
                             <div class="meta-item">
                                 <span class="meta-label"><i class="fas fa-users"></i> Acteurs</span>
                                 <span class="meta-value">
@@ -184,6 +182,19 @@ closeDB($conn);
                 <p><?php echo htmlspecialchars($article['synopsis']); ?></p>
             </div>
         </section>
+
+        <?php if (!empty($article['imageSecondaire'])): ?>
+        <section class="film-photos">
+            <div class="container">
+                <div class="film-photos-row">
+                    <img src="<?php echo htmlspecialchars($article['affiche']); ?>"
+                         alt="Affiche — <?php echo htmlspecialchars($article['titreFilm']); ?>">
+                    <img src="<?php echo htmlspecialchars($article['imageSecondaire']); ?>"
+                         alt="Photo — <?php echo htmlspecialchars($article['titreFilm']); ?>">
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
 
 
         <section class="film-reviews">
@@ -228,7 +239,6 @@ closeDB($conn);
                     <?php endif; ?>
                 </div>
 
-                <!-- Formulaire pour ajouter un avis -->
                 <?php if (isset($_SESSION['id_utilisateur']) && !$dejaUnAvis): ?>
                     <div class="add-review-card">
                         <h3>Laisser un avis</h3>
@@ -283,6 +293,7 @@ closeDB($conn);
     </main>
 
     <?php include("static/footer.php"); ?>
+
 
 </body>
 

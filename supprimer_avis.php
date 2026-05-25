@@ -30,9 +30,16 @@ if (!estAdmin() && !estAuteurAvis($conn, $id_avis, $_SESSION['id_utilisateur']))
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_article = $avis['id_article'];
+    $from_admin = isset($_GET['from']) && $_GET['from'] === 'admin';
     $ok = supprimerAvis($conn, $id_avis);
     closeDB($conn);
-    header($ok ? 'Location: article.php?id=' . $id_article : 'Location: index.php?erreur=suppression');
+    if (!$ok) {
+        header('Location: index.php?erreur=suppression');
+    } elseif ($from_admin) {
+        header('Location: admin.php');
+    } else {
+        header('Location: article.php?id=' . $id_article);
+    }
     exit;
 }
 
@@ -61,7 +68,8 @@ closeDB($conn);
                     Cette action est irréversible.
                 </p>
 
-                <form method="POST" action="supprimer_avis.php?id=<?php echo $id_avis; ?>">
+                <?php $from_admin = isset($_GET['from']) && $_GET['from'] === 'admin'; ?>
+                <form method="POST" action="supprimer_avis.php?id=<?php echo $id_avis; ?><?php echo $from_admin ? '&from=admin' : ''; ?>">
                     <div class="form-actions">
                         <button type="submit" class="btn-danger">Supprimer définitivement</button>
                         <a href="article.php?id=<?php echo $avis['id_article']; ?>" class="btn-login">Annuler</a>

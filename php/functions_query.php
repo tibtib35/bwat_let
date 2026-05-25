@@ -78,15 +78,15 @@ function getArticle($mysqli, $id) {
 
     $sql = "SELECT id_article, article.titre AS titreArticle, article.contenu, article.dateCreation,
                  film.id_film, film.titre AS titreFilm, film.synopsis, film.dateSortie, film.duree, film.paysOrigine, film.langue, film.affiche,
-                 genre.nomGenre, utilisateurs.login AS auteur
-            FROM article InNER JOIN film ON article.id_film = film.id_film
+                 genre.nomGenre, utilisateurs.login AS auteur,
+                 image.chemin AS imageSecondaire
+            FROM article INNER JOIN film ON article.id_film = film.id_film
                 INNER JOIN genre ON film.id_genre = genre.id_genre
                 INNER JOIN utilisateurs ON article.id_utilisateur = utilisateurs.id_utilisateur
+                LEFT JOIN image ON film.id_image = image.id_image
             WHERE article.id_article = $id";
 
     $result = readDB($mysqli, $sql);
-
-
     return $result[0] ?? null;
 }
 
@@ -99,8 +99,6 @@ function getAvisByArticle($mysqli, $id_article) {
             WHERE avis.id_article = $id_article
               AND avis.visible = TRUE
             ORDER BY avis.dateCreation DESC";
-        
-            
 
     return readDB($mysqli, $sql);
 }
@@ -324,12 +322,10 @@ function login($mysqli, $login, $password)
             LIMIT 1";
 
     $result = readDB($mysqli, $sql);
-
     return $result[0] ?? null;
+}
 
- }
-
- function updateUserInfo($mysqli, $id_utilisateur, $nom, $prenom, $email, $adresse) {
+function updateUserInfo($mysqli, $id_utilisateur, $nom, $prenom, $email, $adresse) {
     $id_utilisateur = (int) $id_utilisateur;
     $nom            = mysqli_real_escape_string($mysqli, $nom);
     $prenom         = mysqli_real_escape_string($mysqli, $prenom);
@@ -382,6 +378,7 @@ function getAvisByUser($mysqli, $id_utilisateur) {
                 INNER JOIN article ON avis.id_article = article.id_article
                 INNER JOIN film ON article.id_film = film.id_film
             WHERE avis.id_utilisateur = $id_utilisateur
+              AND avis.visible = TRUE
             ORDER BY avis.dateCreation DESC";
 
     return readDB($mysqli, $sql);
@@ -449,6 +446,69 @@ function changerRole($mysqli, $id_utilisateur, $id_role) {
 
     $sql = "UPDATE utilisateurs SET id_role = $id_role WHERE id_utilisateur = $id_utilisateur";
     return writeDB($mysqli, $sql);
+}
+
+
+function getPlateformes($mysqli) {
+    $sql = "SELECT id_plateforme, nomPlateforme FROM plateforme ORDER BY nomPlateforme ASC";
+    return readDB($mysqli, $sql);
+}
+
+
+function creerFilm($mysqli, $titre, $synopsis, $dateSortie, $duree, $paysOrigine, $langue, $affiche, $id_genre, $id_plateforme) {
+    $titre         = mysqli_real_escape_string($mysqli, $titre);
+    $synopsis      = mysqli_real_escape_string($mysqli, $synopsis);
+    $dateSortie    = mysqli_real_escape_string($mysqli, $dateSortie);
+    $duree         = (int) $duree;
+    $paysOrigine   = mysqli_real_escape_string($mysqli, $paysOrigine);
+    $langue        = mysqli_real_escape_string($mysqli, $langue);
+    $affiche       = mysqli_real_escape_string($mysqli, $affiche);
+    $id_genre      = (int) $id_genre;
+    $id_plateforme = (int) $id_plateforme;
+
+    $sql = "INSERT INTO film (titre, synopsis, dateSortie, duree, paysOrigine, langue, affiche, id_genre, id_plateforme)
+            VALUES ('$titre', '$synopsis', '$dateSortie', $duree, '$paysOrigine', '$langue', '$affiche', $id_genre, $id_plateforme)";
+
+    if (!mysqli_query($mysqli, $sql)) return 0;
+    return (int) mysqli_insert_id($mysqli);
+}
+
+
+function lierRealisateur($mysqli, $id_film, $nom, $prenom) {
+    $id_film = (int) $id_film;
+    $nom     = mysqli_real_escape_string($mysqli, $nom);
+    $prenom  = mysqli_real_escape_string($mysqli, $prenom);
+
+    $existing = readDB($mysqli, "SELECT id_real FROM realisateurs WHERE nom = '$nom' AND prenom = '$prenom' LIMIT 1");
+
+    if (!empty($existing)) {
+        $id_real = (int) $existing[0]['id_real'];
+    } else {
+        mysqli_query($mysqli, "INSERT INTO realisateurs (nom, prenom) VALUES ('$nom', '$prenom')");
+        $id_real = (int) mysqli_insert_id($mysqli);
+    }
+
+    if ($id_real <= 0) return false;
+    return writeDB($mysqli, "INSERT IGNORE INTO realise (id_film, id_real) VALUES ($id_film, $id_real)");
+}
+
+
+function lierActeur($mysqli, $id_film, $nom, $prenom) {
+    $id_film = (int) $id_film;
+    $nom     = mysqli_real_escape_string($mysqli, $nom);
+    $prenom  = mysqli_real_escape_string($mysqli, $prenom);
+
+    $existing = readDB($mysqli, "SELECT id_acteur FROM acteurs WHERE nom = '$nom' AND prenom = '$prenom' LIMIT 1");
+
+    if (!empty($existing)) {
+        $id_acteur = (int) $existing[0]['id_acteur'];
+    } else {
+        mysqli_query($mysqli, "INSERT INTO acteurs (nom, prenom) VALUES ('$nom', '$prenom')");
+        $id_acteur = (int) mysqli_insert_id($mysqli);
+    }
+
+    if ($id_acteur <= 0) return false;
+    return writeDB($mysqli, "INSERT IGNORE INTO joueDans (id_acteur, id_film) VALUES ($id_acteur, $id_film)");
 }
 
 
