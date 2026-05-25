@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paysOrigine = trim($_POST['paysOrigine'] ?? '');
     $langue = trim($_POST['langue'] ?? '');
     $affiche = trim($_POST['affiche'] ?? '');
+    $imageSecondaire = trim($_POST['imageSecondaire'] ?? '');
     $id_genre = (int) ($_POST['id_genre'] ?? 0);
     $id_plateforme = (int) ($_POST['id_plateforme'] ?? 0);
 
@@ -50,8 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($id_plateforme <= 0) {
         $erreur = 'Veuillez sélectionner une plateforme.';
     } else {
-        $conn    = connectionDB();
-        $id_film = creerFilm($conn, $titre, $synopsis, $dateSortie, $duree, $paysOrigine, $langue, $affiche, $id_genre, $id_plateforme);
+        $conn = connectionDB();
+        $id_image = 0;
+        if ($imageSecondaire !== '') {
+            $id_image = creerImage($conn, $imageSecondaire);
+        }
+        $id_film = creerFilm($conn, $titre, $synopsis, $dateSortie, $duree, $paysOrigine, $langue, $affiche, $id_genre, $id_plateforme, $id_image);
 
         if ($id_film > 0) {
             foreach ($realisateurs_noms as $i => $nom) {
@@ -85,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un film - Bwat Let</title>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php include("static/header.php"); ?>
@@ -168,8 +174,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="affiche">URL de l'affiche</label>
                         <input type="text" id="affiche" name="affiche"
-                               placeholder="ex : img/mon_film.jpg"
+                               placeholder="ex : img/affiche_monfilm.jpg"
                                value="<?php echo htmlspecialchars($_POST['affiche'] ?? ''); ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageSecondaire">Image secondaire <small>(optionnel)</small></label>
+                        <input type="text" id="imageSecondaire" name="imageSecondaire"
+                               placeholder="ex : img/monfilm.jpg"
+                               value="<?php echo htmlspecialchars($_POST['imageSecondaire'] ?? ''); ?>">
                     </div>
 
                     <div class="form-group">

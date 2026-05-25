@@ -73,7 +73,11 @@ closeDB($conn);
                 <form method="POST" action="supprimer_avis.php?id=<?php echo $id_avis; ?><?php echo $from_admin ? '&from=admin' : ''; ?>">
                     <div class="form-actions">
                         <button type="submit" class="btn-danger">Supprimer définitivement</button>
-                        <a href="article.php?id=<?php echo $avis['id_article']; ?>" class="btn-login">Annuler</a>
+                        <?php if ($from_admin): ?>
+                            <a href="admin.php" class="btn-login">Annuler</a>
+                        <?php else: ?>
+                            <a href="article.php?id=<?php echo $avis['id_article']; ?>" class="btn-login">Annuler</a>
+                        <?php endif; ?>
                     </div>
                 </form>
 

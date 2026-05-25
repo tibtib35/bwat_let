@@ -344,13 +344,9 @@ function updateUserInfo($mysqli, $id_utilisateur, $nom, $prenom, $email, $adress
 
 function updateUserPassword($mysqli, $id_utilisateur, $new_password) {
     $id_utilisateur = (int) $id_utilisateur;
-    
-    $new_mdp = mysqli_real_escape_string($mysqli, $new_password);
-    
-    $sql = "UPDATE utilisateurs
-            SET mdp = '$new_mdp'
-            WHERE id_utilisateur = $id_utilisateur";
-    
+    $new_mdp = mysqli_real_escape_string($mysqli, password_hash($new_password, PASSWORD_DEFAULT));
+
+    $sql = "UPDATE utilisateurs SET mdp = '$new_mdp' WHERE id_utilisateur = $id_utilisateur";
     return writeDB($mysqli, $sql);
 }
 
@@ -455,7 +451,14 @@ function getPlateformes($mysqli) {
 }
 
 
-function creerFilm($mysqli, $titre, $synopsis, $dateSortie, $duree, $paysOrigine, $langue, $affiche, $id_genre, $id_plateforme) {
+function creerImage($mysqli, $chemin) {
+    $chemin = mysqli_real_escape_string($mysqli, $chemin);
+    $sql = "INSERT INTO image (chemin) VALUES ('$chemin')";
+    if (!mysqli_query($mysqli, $sql)) return 0;
+    return (int) mysqli_insert_id($mysqli);
+}
+
+function creerFilm($mysqli, $titre, $synopsis, $dateSortie, $duree, $paysOrigine, $langue, $affiche, $id_genre, $id_plateforme, $id_image = 0) {
     $titre         = mysqli_real_escape_string($mysqli, $titre);
     $synopsis      = mysqli_real_escape_string($mysqli, $synopsis);
     $dateSortie    = mysqli_real_escape_string($mysqli, $dateSortie);
@@ -465,9 +468,10 @@ function creerFilm($mysqli, $titre, $synopsis, $dateSortie, $duree, $paysOrigine
     $affiche       = mysqli_real_escape_string($mysqli, $affiche);
     $id_genre      = (int) $id_genre;
     $id_plateforme = (int) $id_plateforme;
+    $id_image_sql  = (int) $id_image > 0 ? (int) $id_image : 'NULL';
 
-    $sql = "INSERT INTO film (titre, synopsis, dateSortie, duree, paysOrigine, langue, affiche, id_genre, id_plateforme)
-            VALUES ('$titre', '$synopsis', '$dateSortie', $duree, '$paysOrigine', '$langue', '$affiche', $id_genre, $id_plateforme)";
+    $sql = "INSERT INTO film (titre, synopsis, dateSortie, duree, paysOrigine, langue, affiche, id_genre, id_plateforme, id_image)
+            VALUES ('$titre', '$synopsis', '$dateSortie', $duree, '$paysOrigine', '$langue', '$affiche', $id_genre, $id_plateforme, $id_image_sql)";
 
     if (!mysqli_query($mysqli, $sql)) return 0;
     return (int) mysqli_insert_id($mysqli);
@@ -513,13 +517,13 @@ function lierActeur($mysqli, $id_film, $nom, $prenom) {
 
 
 function addProfile($mysqli, $login, $nom, $prenom, $address, $email, $dateNaissance, $mdp) {
-    $login          = mysqli_real_escape_string($mysqli, $login);
-    $nom            = mysqli_real_escape_string($mysqli, $nom);
-    $prenom         = mysqli_real_escape_string($mysqli, $prenom);
-    $address        = mysqli_real_escape_string($mysqli, $address);
-    $dateNaissance  = mysqli_real_escape_string($mysqli, $dateNaissance);
-    $email          = mysqli_real_escape_string($mysqli, $email);
-    $mdp            = mysqli_real_escape_string($mysqli, $mdp);
+    $login         = mysqli_real_escape_string($mysqli, $login);
+    $nom           = mysqli_real_escape_string($mysqli, $nom);
+    $prenom        = mysqli_real_escape_string($mysqli, $prenom);
+    $address       = mysqli_real_escape_string($mysqli, $address);
+    $dateNaissance = mysqli_real_escape_string($mysqli, $dateNaissance);
+    $email         = mysqli_real_escape_string($mysqli, $email);
+    $mdp           = mysqli_real_escape_string($mysqli, password_hash($mdp, PASSWORD_DEFAULT));
     $dateCreation   = date('Y-m-d H:i:s');
     $derniereConnexion = date('Y-m-d H:i:s');
     $id_role        = 1;

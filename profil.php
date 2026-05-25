@@ -74,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
         $error = 'Le nouveau mot de passe doit contenir au moins 8 caractères.';
     } elseif ($new_password !== $confirm_password) {
         $error = 'Les mots de passe ne correspondent pas.';
-    } elseif ($old_password !== $user['mdp']) {
+    } elseif (!password_verify($old_password, $user['mdp'])) {
         $error = 'L\'ancien mot de passe est incorrect.';
-    } elseif ($new_password === $user['mdp']) {
+    } elseif (password_verify($new_password, $user['mdp'])) {
         $error = 'Le nouveau mot de passe doit être différent de l\'ancien.';
     } else {
         $mysqli = connectionDB();

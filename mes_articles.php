@@ -4,12 +4,10 @@ require_once("includes/auth.php");
 require_once("includes/functions-DB.php");
 require_once("php/functions_query.php");
 
-// Vérifier que l'utilisateur est rédacteur ou administrateur
 exigerRole(2);
 
 $conn = connectionDB();
-$id_utilisateur = $_SESSION['id_utilisateur'];
-$articles = getArticlesByUser($conn, $id_utilisateur);
+$articles = getArticlesByUser($conn, $_SESSION['id_utilisateur']);
 closeDB($conn);
 ?>
 <!DOCTYPE html>
@@ -25,40 +23,36 @@ closeDB($conn);
     <?php include("static/header.php"); ?>
 
     <main>
-        <div class="container">
-            <h1>Mes articles</h1>
-            <p class="section-description">
-                Voici la liste des articles que vous avez rédigés. Vous pouvez les visualiser, les modifier ou les supprimer.
-            </p>
+        <section class="profile-section">
+            <div class="container">
+                <div class="profile-card" style="max-width: 860px;">
+                    <h2>Mes articles (<?php echo count($articles); ?>)</h2>
 
-            <?php if (empty($articles)): ?>
-                <div class="no-articles">
-                    <p>Vous n'avez pas encore rédigé d'article.</p>
-                    <a href="creer_article.php" class="btn-primary" style="display: inline-block; margin-top: 20px;">Créer un article</a>
+                    <?php if (empty($articles)): ?>
+                        <p>Vous n'avez pas encore rédigé d'article. <a href="creer_article.php" style="color: var(--accent);">Créer un article</a></p>
+                    <?php else: ?>
+                        <ul class="profile-list">
+                            <?php foreach ($articles as $art): ?>
+                                <li class="profile-list-item">
+                                    <div>
+                                        <div class="profile-list-title"><?php echo htmlspecialchars($art['titreArticle']); ?></div>
+                                        <div class="profile-list-meta">
+                                            <?php echo htmlspecialchars($art['titreFilm']); ?>
+                                            &bull; <?php echo date('d/m/Y', strtotime($art['dateCreation'])); ?>
+                                        </div>
+                                    </div>
+                                    <div class="profile-list-actions">
+                                        <a href="article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Voir</a>
+                                        <a href="modifier_article.php?id=<?php echo $art['id_article']; ?>" class="btn-edit">Modifier</a>
+                                        <a href="supprimer_article.php?id=<?php echo $art['id_article']; ?>" class="btn-danger-small">Supprimer</a>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
-            <?php else: ?>
-                <div class="articles-grid">
-                    <?php foreach ($articles as $article): ?>
-                        <div class="article-card">
-                            <div class="article-header">
-                                <h3 class="article-title"><?php echo htmlspecialchars($article['titreArticle']); ?></h3>
-                            </div>
-                            
-                            <div class="article-meta">
-                                <span><strong>Film:</strong> <?php echo htmlspecialchars($article['titreFilm']); ?></span>
-                                <span><strong>Date:</strong> <?php echo date('d/m/Y', strtotime($article['dateCreation'])); ?></span>
-                            </div>
-
-                            <div class="article-actions">
-                                <a href="article.php?id=<?php echo $article['id_article']; ?>" class="btn-small btn-view">Voir</a>
-                                <a href="modifier_article.php?id=<?php echo $article['id_article']; ?>" class="btn-small btn-edit">Modifier</a>
-                                <a href="supprimer_article.php?id=<?php echo $article['id_article']; ?>" class="btn-small btn-delete">Supprimer</a>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        </section>
     </main>
 
     <?php include("static/footer.php"); ?>
